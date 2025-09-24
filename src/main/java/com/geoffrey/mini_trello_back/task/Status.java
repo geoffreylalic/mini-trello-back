@@ -1,4 +1,4 @@
-package com.geoffrey.mini_trello_back.Task;
+package com.geoffrey.mini_trello_back.task;
 
 public enum Status {
     DONE,

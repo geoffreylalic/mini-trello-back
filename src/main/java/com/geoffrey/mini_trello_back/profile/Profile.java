@@ -1,6 +1,6 @@
 package com.geoffrey.mini_trello_back.profile;
 
-import com.geoffrey.mini_trello_back.Task.Task;
+import com.geoffrey.mini_trello_back.task.Task;
 import com.geoffrey.mini_trello_back.project.Project;
 import com.geoffrey.mini_trello_back.user.User;
 import jakarta.persistence.*;
