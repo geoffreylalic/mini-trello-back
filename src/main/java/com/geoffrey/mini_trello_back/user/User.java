@@ -3,7 +3,7 @@ package com.geoffrey.mini_trello_back.user;
 import com.geoffrey.mini_trello_back.profile.Profile;
 import jakarta.persistence.*;
 
-@Table(name = "User")
+@Table(name = "users")
 @Entity
 public class User {
     @Id

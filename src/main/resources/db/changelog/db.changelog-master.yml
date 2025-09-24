@@ -7,7 +7,7 @@ databaseChangeLog:
       author: geoffreylalic
       changes:
         - createTable:
-            tableName: user
+            tableName: users
             columns:
               - column:
                   name: id
@@ -34,7 +34,7 @@ databaseChangeLog:
                   name: last_name
                   type: varchar(50)
         - createTable:
-            tableName: profile
+            tableName: profiles
             columns:
               - column:
                   name: id
@@ -48,7 +48,6 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
-                    unique: true
               - column:
                   name: date_of_birth
                   type: date
@@ -56,7 +55,7 @@ databaseChangeLog:
                   name: role
                   type: varchar(50)
         - createTable:
-            tableName: project
+            tableName: projects
             columns:
               - column:
                   name: id
@@ -70,7 +69,6 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
-                    unique: true
               - column:
                   name: name
                   type: varchar(50)
@@ -78,7 +76,7 @@ databaseChangeLog:
                   name: description
                   type: text
         - createTable:
-            tableName: task
+            tableName: tasks
             columns:
               - column:
                   name: id
@@ -92,7 +90,6 @@ databaseChangeLog:
                   type: varchar(50)
                   constraints:
                     nullable: false
-                    unique: true
               - column:
                   name: description
                   type: text
@@ -106,34 +103,34 @@ databaseChangeLog:
                   name: project_id
                   type: bigint
         - addForeignKeyConstraint:
-            baseTableName: task
+            baseTableName: tasks
             baseColumnNames: profile_id
-            constraintName: fk_task_profile
+            constraintName: fk_tasks_profiles
             onDelete: CASCADE
             onUpdate: RESTRICT
             referencedColumnNames: id
-            referencedTableName: profile
+            referencedTableName: profiles
         - addForeignKeyConstraint:
-            baseTableName: task
+            baseTableName: tasks
             baseColumnNames: project_id
-            constraintName: fk_task_project
+            constraintName: fk_tasks_projects
             onDelete: CASCADE
             onUpdate: RESTRICT
             referencedColumnNames: id
-            referencedTableName: project
+            referencedTableName: projects
         - addForeignKeyConstraint:
-            baseTableName: project
+            baseTableName: projects
             baseColumnNames: profile_id
-            constraintName: fk_project_profile
+            constraintName: fk_projects_profiles
             onDelete: CASCADE
             onUpdate: RESTRICT
             referencedColumnNames: id
-            referencedTableName: profile
+            referencedTableName: profiles
         - addForeignKeyConstraint:
-            baseTableName: profile
+            baseTableName: profiles
             baseColumnNames: user_id
-            constraintName: fk_profile_user
+            constraintName: fk_profiles_users
             onDelete: CASCADE
             onUpdate: RESTRICT
             referencedColumnNames: id
-            referencedTableName: user
+            referencedTableName: users

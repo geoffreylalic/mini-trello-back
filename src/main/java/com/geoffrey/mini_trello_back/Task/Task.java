@@ -4,7 +4,7 @@ import com.geoffrey.mini_trello_back.profile.Profile;
 import com.geoffrey.mini_trello_back.project.Project;
 import jakarta.persistence.*;
 
-@Table(name = "task")
+@Table(name = "tasks")
 @Entity
 public class Task {
     @Id
