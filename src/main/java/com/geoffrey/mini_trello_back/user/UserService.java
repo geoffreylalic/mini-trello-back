@@ -35,18 +35,12 @@ public class UserService {
     }
 
     public UserResponseDto getUserById(int userId) {
-        User user = userRepository.findUserById(userId);
-        if (user == null) {
-            throw new UserDoesNotExistsException(userId);
-        }
+        User user = userRepository.findUserById(userId).orElseThrow(() -> new UserDoesNotExistsException(userId));
         return userMapper.toUserResponse(user);
     }
 
     public UserResponseDto patchUserById(int userId, UpdateUserDto userDto) {
-        User user = userRepository.findUserById(userId);
-        if (user == null) {
-            throw new UserDoesNotExistsException(userId);
-        }
+        User user = userRepository.findUserById(userId).orElseThrow(() -> new UserDoesNotExistsException(userId));
         if (userDto.email() != null) {
             user.setEmail(userDto.email());
         }
@@ -59,10 +53,7 @@ public class UserService {
     }
 
     public void deleteUserById(int userId) {
-        User user = userRepository.findUserById(userId);
-        if (user == null) {
-            throw new UserDoesNotExistsException(userId);
-        }
+        User user = userRepository.findUserById(userId).orElseThrow(() -> new UserDoesNotExistsException(userId));
         userRepository.delete(user);
     }
 }
