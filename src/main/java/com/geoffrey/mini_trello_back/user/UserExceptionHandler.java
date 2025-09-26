@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(basePackages = "com.geoffrey.mini_trello_back.user")
+@RestControllerAdvice()
 public class UserExceptionHandler {
     @ExceptionHandler(UserEmailExistsException.class)
     public ResponseEntity<ApiError> handleUserEmailExistsError(UserEmailExistsException ex,
