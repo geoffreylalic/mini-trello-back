@@ -2,6 +2,7 @@ package com.geoffrey.mini_trello_back.user;
 
 import com.geoffrey.mini_trello_back.user.dto.CreateUserDto;
 import com.geoffrey.mini_trello_back.user.dto.UserResponseDto;
+import com.geoffrey.mini_trello_back.user.exceptions.UserDoesNotExistsException;
 import com.geoffrey.mini_trello_back.user.exceptions.UserEmailExistsException;
 import org.springframework.stereotype.Service;
 
@@ -30,5 +31,13 @@ public class UserService {
     public List<UserResponseDto> listUsers() {
         List<User> users = userRepository.findAll();
         return userMapper.toListUserResponse(users);
+    }
+
+    public UserResponseDto getUserById(int userId) {
+        User user = userRepository.findUserById(userId);
+        if (user == null) {
+            throw new UserDoesNotExistsException(userId);
+        }
+        return userMapper.toUserResponse(user);
     }
 }

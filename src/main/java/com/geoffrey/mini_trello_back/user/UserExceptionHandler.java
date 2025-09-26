@@ -1,6 +1,7 @@
 package com.geoffrey.mini_trello_back.user;
 
 import com.geoffrey.mini_trello_back.common.ApiError;
+import com.geoffrey.mini_trello_back.user.exceptions.UserDoesNotExistsException;
 import com.geoffrey.mini_trello_back.user.exceptions.UserEmailExistsException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,13 @@ public class UserExceptionHandler {
                                                                HttpServletRequest request) {
         ApiError error = new ApiError(HttpStatus.BAD_REQUEST.value(), "User email already exists", ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(UserDoesNotExistsException.class)
+    public ResponseEntity<ApiError> handleUserDoesNotExistsError(UserDoesNotExistsException ex,
+                                                                 HttpServletRequest request) {
+        ApiError error = new ApiError(HttpStatus.NOT_FOUND.value(), "User not found", ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 }
 

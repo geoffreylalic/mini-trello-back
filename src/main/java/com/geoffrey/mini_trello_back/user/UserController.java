@@ -3,10 +3,7 @@ package com.geoffrey.mini_trello_back.user;
 import com.geoffrey.mini_trello_back.user.dto.CreateUserDto;
 import com.geoffrey.mini_trello_back.user.dto.UserResponseDto;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,6 +24,12 @@ public class UserController {
     @GetMapping("/users")
     public List<UserResponseDto> listUsers(){
         return userService.listUsers();
+    }
+
+    @GetMapping("/users/{id}")
+    public UserResponseDto getUserById(@PathVariable("id") int userId){
+
+        return userService.getUserById(userId);
     }
 
 }
