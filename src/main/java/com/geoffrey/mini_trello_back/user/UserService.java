@@ -57,4 +57,12 @@ public class UserService {
         return userMapper.toUserResponse(user);
 
     }
+
+    public void deleteUserById(int userId) {
+        User user = userRepository.findUserById(userId);
+        if (user == null) {
+            throw new UserDoesNotExistsException(userId);
+        }
+        userRepository.delete(user);
+    }
 }
