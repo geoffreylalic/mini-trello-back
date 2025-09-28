@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Past;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -51,5 +52,13 @@ public class ProfileMapper {
                 projects,
                 tasks
         );
+    }
+
+    public List<ProfileResponseDto> toListProfileResponseDto(List<Profile> profiles) {
+        List<ProfileResponseDto> profileResponseDtoList = new ArrayList<ProfileResponseDto>();
+        for (Profile profile : profiles) {
+            profileResponseDtoList.add(toProfileResponseDto(profile));
+        }
+        return profileResponseDtoList;
     }
 }

@@ -8,6 +8,8 @@ import com.geoffrey.mini_trello_back.user.UserRepository;
 import com.geoffrey.mini_trello_back.user.exceptions.UserDoesNotExistsException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProfileService {
 
@@ -33,5 +35,10 @@ public class ProfileService {
         Profile profile = profileRepository.save(newProfile);
 
         return profileMapper.toProfileResponseDto(profile);
+    }
+
+    public List<ProfileResponseDto> listProfiles() {
+        List<Profile> profiles = profileRepository.findAll();
+        return profileMapper.toListProfileResponseDto(profiles);
     }
 }
