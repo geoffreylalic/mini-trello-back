@@ -1,5 +1,6 @@
 package com.geoffrey.mini_trello_back.task;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.geoffrey.mini_trello_back.profile.Profile;
 import com.geoffrey.mini_trello_back.project.Project;
 import jakarta.persistence.*;
@@ -17,10 +18,12 @@ public class Task {
     private Status status;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "profile_id")
     private Profile assignedTo;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "project_id")
     private Project project;
 

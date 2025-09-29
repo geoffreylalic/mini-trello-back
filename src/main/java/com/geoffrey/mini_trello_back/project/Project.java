@@ -1,5 +1,7 @@
 package com.geoffrey.mini_trello_back.project;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.geoffrey.mini_trello_back.task.Task;
 import com.geoffrey.mini_trello_back.profile.Profile;
 import jakarta.persistence.*;
@@ -17,10 +19,12 @@ public class Project {
     private String description;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "profile_id")
     private Profile owner;
 
     @OneToMany(mappedBy = "project")
+    @JsonManagedReference
     private List<Task> tasks;
 
     public Project(String name, String description, Profile owner) {

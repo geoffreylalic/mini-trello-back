@@ -1,5 +1,6 @@
 package com.geoffrey.mini_trello_back.profile;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.geoffrey.mini_trello_back.task.Task;
 import com.geoffrey.mini_trello_back.project.Project;
 import com.geoffrey.mini_trello_back.user.User;
@@ -26,9 +27,11 @@ public class Profile {
     private Role role;
 
     @OneToMany(mappedBy = "owner")
+    @JsonManagedReference
     private List<Project> projects;
 
     @OneToMany(mappedBy = "assignedTo")
+    @JsonManagedReference
     private List<Task> tasks;
 
     public Profile(User user, LocalDate dateOfBirth, Role role) {
