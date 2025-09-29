@@ -4,6 +4,8 @@ import com.geoffrey.mini_trello_back.profile.Profile;
 import com.geoffrey.mini_trello_back.profile.ProfileRepository;
 import com.geoffrey.mini_trello_back.profile.exceptions.ProfileNotFoundException;
 import com.geoffrey.mini_trello_back.project.dto.CreateProjectDto;
+import com.geoffrey.mini_trello_back.project.dto.PatchProjectDto;
+import com.geoffrey.mini_trello_back.project.dto.PatchProjectOwnerDto;
 import com.geoffrey.mini_trello_back.project.dto.ProjectResponseDto;
 import com.geoffrey.mini_trello_back.project.exceptions.ProjecNotFoundException;
 import org.springframework.stereotype.Service;
@@ -38,5 +40,34 @@ public class ProjectService {
     public ProjectResponseDto getProject(Integer projectId) {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjecNotFoundException(projectId));
         return projectMapper.toProjectResponseDto(project);
+    }
+
+    public ProjectResponseDto patchProject(Integer projectId, PatchProjectDto projectDto) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjecNotFoundException(projectId));
+
+        project.setName(projectDto.name());
+        if (projectDto.description() != null) {
+            project.setDescription(projectDto.description());
+        }
+
+        Project newProject = projectRepository.save(project);
+        return projectMapper.toProjectResponseDto(newProject);
+    }
+
+    public ProjectResponseDto patchProjectOwner(Integer projectId, PatchProjectOwnerDto projectDto) {
+        Integer profileId = projectDto.profileId();
+
+        Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjecNotFoundException(projectId));
+
+        project.setOwner(profile);
+
+        Project newProject = projectRepository.save(project);
+        return projectMapper.toProjectResponseDto(newProject);
+    }
+
+    public void deleteProject(Integer projectId) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjecNotFoundException(projectId));
+        projectRepository.delete(project);
     }
 }
