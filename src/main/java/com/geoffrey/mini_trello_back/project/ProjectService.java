@@ -5,6 +5,7 @@ import com.geoffrey.mini_trello_back.profile.ProfileRepository;
 import com.geoffrey.mini_trello_back.profile.exceptions.ProfileNotFoundException;
 import com.geoffrey.mini_trello_back.project.dto.CreateProjectDto;
 import com.geoffrey.mini_trello_back.project.dto.ProjectResponseDto;
+import com.geoffrey.mini_trello_back.project.exceptions.ProjecNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,5 +33,10 @@ public class ProjectService {
         Project project = projectMapper.toProject(projectDto, owner);
         Project newProject = projectRepository.save(project);
         return projectMapper.toProjectResponseDto(newProject);
+    }
+
+    public ProjectResponseDto getProject(Integer projectId) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjecNotFoundException(projectId));
+        return projectMapper.toProjectResponseDto(project);
     }
 }
