@@ -1,6 +1,7 @@
 package com.geoffrey.mini_trello_back.profile;
 
 import com.geoffrey.mini_trello_back.profile.dto.ProfileResponseDto;
+import com.geoffrey.mini_trello_back.profile.dto.SimpleProfileResponseDto;
 import com.geoffrey.mini_trello_back.project.Project;
 import com.geoffrey.mini_trello_back.task.Task;
 import com.geoffrey.mini_trello_back.user.User;
@@ -60,5 +61,19 @@ public class ProfileMapper {
             profileResponseDtoList.add(toProfileResponseDto(profile));
         }
         return profileResponseDtoList;
+    }
+
+    public SimpleProfileResponseDto toSimpleProfileResponseDto(Profile profile) {
+        Integer id = profile.getId();
+        UserResponseDto userResponseDto = userMapper.toUserResponse(profile.getUser());
+        LocalDate dateOfBirth = profile.getDateOfBirth();
+        String role = profile.getRole().name();
+
+        return new SimpleProfileResponseDto(
+                id,
+                userResponseDto,
+                dateOfBirth,
+                role
+        );
     }
 }
