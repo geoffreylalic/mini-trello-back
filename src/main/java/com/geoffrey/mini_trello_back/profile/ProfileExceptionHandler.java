@@ -22,7 +22,7 @@ public class ProfileExceptionHandler {
 
     @ExceptionHandler(ProfileNotFoundException.class)
     public ResponseEntity<ApiError> handleProfileNotFoundError(ProfileNotFoundException ex, HttpServletRequest request) {
-        ApiError error = new ApiError(HttpStatus.NOT_FOUND.value(), "Profile already exists.", ex.getMessage(), request.getRequestURI());
+        ApiError error = new ApiError(HttpStatus.NOT_FOUND.value(), "Profile not found.", ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 }
