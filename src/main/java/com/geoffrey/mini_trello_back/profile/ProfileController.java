@@ -1,6 +1,7 @@
 package com.geoffrey.mini_trello_back.profile;
 
 import com.geoffrey.mini_trello_back.profile.dto.CreateProfileDto;
+import com.geoffrey.mini_trello_back.profile.dto.PatchProfileDto;
 import com.geoffrey.mini_trello_back.profile.dto.ProfileResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -28,5 +29,10 @@ public class ProfileController {
     @GetMapping("profiles/{profile_id}")
     public ProfileResponseDto getProfile(@PathVariable("profile_id") int profileId) {
         return profileService.getProfile(profileId);
+    }
+
+    @PatchMapping("profiles/{profile_id}")
+    public ProfileResponseDto patchProfile(@Valid @RequestBody PatchProfileDto profileDto, @PathVariable("profile_id") int profileId) {
+        return profileService.patchProfile(profileDto, profileId);
     }
 }

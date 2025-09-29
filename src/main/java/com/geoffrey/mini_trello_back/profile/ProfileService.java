@@ -1,6 +1,7 @@
 package com.geoffrey.mini_trello_back.profile;
 
 import com.geoffrey.mini_trello_back.profile.dto.CreateProfileDto;
+import com.geoffrey.mini_trello_back.profile.dto.PatchProfileDto;
 import com.geoffrey.mini_trello_back.profile.dto.ProfileResponseDto;
 import com.geoffrey.mini_trello_back.profile.exceptions.ProfileNotFoundException;
 import com.geoffrey.mini_trello_back.profile.exceptions.ProfileUserAlreadyExistsException;
@@ -46,5 +47,12 @@ public class ProfileService {
     public ProfileResponseDto getProfile(int profileId) {
         Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
         return profileMapper.toProfileResponseDto(profile);
+    }
+
+    public ProfileResponseDto patchProfile(PatchProfileDto profileDto, int profileId) {
+        Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
+        profile.setDateOfBirth(profileDto.dateOfBirth());
+        Profile newProfile = profileRepository.save(profile);
+        return profileMapper.toProfileResponseDto(newProfile);
     }
 }
