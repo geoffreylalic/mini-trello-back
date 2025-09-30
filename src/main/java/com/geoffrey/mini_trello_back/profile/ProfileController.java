@@ -3,6 +3,9 @@ package com.geoffrey.mini_trello_back.profile;
 import com.geoffrey.mini_trello_back.profile.dto.CreateProfileDto;
 import com.geoffrey.mini_trello_back.profile.dto.PatchProfileDto;
 import com.geoffrey.mini_trello_back.profile.dto.ProfileResponseDto;
+import com.geoffrey.mini_trello_back.project.dto.SimpleProjectDto;
+import com.geoffrey.mini_trello_back.task.dto.ProfileTasksDto;
+import com.geoffrey.mini_trello_back.task.dto.SimpleTaskResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,5 +37,15 @@ public class ProfileController {
     @PatchMapping("profiles/{profile_id}")
     public ProfileResponseDto patchProfile(@Valid @RequestBody PatchProfileDto profileDto, @PathVariable("profile_id") int profileId) {
         return profileService.patchProfile(profileDto, profileId);
+    }
+
+    @GetMapping("profiles/{profile_id}/projects")
+    public List<SimpleProjectDto> getProjectsProfile(@PathVariable("profile_id") int profileId) {
+        return profileService.getProjectsProfile(profileId);
+    }
+
+    @GetMapping("profiles/{profile_id}/tasks")
+    public List<ProfileTasksDto> getTasksProfiles(@PathVariable("profile_id") int profileId) {
+        return profileService.getTasksProfiles(profileId);
     }
 }

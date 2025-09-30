@@ -7,7 +7,9 @@ import com.geoffrey.mini_trello_back.project.Project;
 import com.geoffrey.mini_trello_back.project.ProjectMapper;
 import com.geoffrey.mini_trello_back.project.dto.ProjectResponseDto;
 import com.geoffrey.mini_trello_back.project.dto.ProjectTasksResponseDto;
+import com.geoffrey.mini_trello_back.project.dto.SimpleProjectDto;
 import com.geoffrey.mini_trello_back.task.dto.CreateTaskDto;
+import com.geoffrey.mini_trello_back.task.dto.ProfileTasksDto;
 import com.geoffrey.mini_trello_back.task.dto.SimpleTaskResponseDto;
 import com.geoffrey.mini_trello_back.task.dto.TaskResponseDto;
 import org.springframework.stereotype.Component;
@@ -71,8 +73,22 @@ public class TaskMapper {
         return new ProjectTasksResponseDto(projectResponseDto, tasksDto);
     }
 
-    private SimpleTaskResponseDto toSimpleTaskResponseDto(Task task) {
+    public SimpleTaskResponseDto toSimpleTaskResponseDto(Task task) {
         SimpleProfileResponseDto profile = profileMapper.toSimpleProfileResponseDto(task.getAssignedTo());
         return new SimpleTaskResponseDto(task.getId(), task.getTitle(), task.getDescription(), task.getStatus().toString(), profile);
     }
+
+    public List<SimpleTaskResponseDto> toListSimpleTaskResponseDto(List<Task> tasks) {
+        return tasks.stream().map(this::toSimpleTaskResponseDto).toList();
+    }
+
+    public ProfileTasksDto toProfileTasksDto(Task task) {
+        SimpleProjectDto projectDto = projectMapper.toSimpleProjectDto(task.getProject());
+        return new ProfileTasksDto(task.getId(), task.getTitle(), task.getDescription(), task.getStatus().toString(), projectDto);
+    }
+
+    public List<ProfileTasksDto> toListProfileTasksDto(List<Task> tasks) {
+        return tasks.stream().map(this::toProfileTasksDto).toList();
+    }
+
 }
