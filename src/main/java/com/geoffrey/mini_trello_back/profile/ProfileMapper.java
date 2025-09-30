@@ -64,6 +64,9 @@ public class ProfileMapper {
     }
 
     public SimpleProfileResponseDto toSimpleProfileResponseDto(Profile profile) {
+        if (profile == null) {
+            return null;
+        }
         Integer id = profile.getId();
         UserResponseDto userResponseDto = userMapper.toUserResponse(profile.getUser());
         LocalDate dateOfBirth = profile.getDateOfBirth();

@@ -3,11 +3,11 @@ package com.geoffrey.mini_trello_back.project;
 import com.geoffrey.mini_trello_back.profile.Profile;
 import com.geoffrey.mini_trello_back.profile.ProfileRepository;
 import com.geoffrey.mini_trello_back.profile.exceptions.ProfileNotFoundException;
-import com.geoffrey.mini_trello_back.project.dto.CreateProjectDto;
-import com.geoffrey.mini_trello_back.project.dto.PatchProjectDto;
-import com.geoffrey.mini_trello_back.project.dto.PatchProjectOwnerDto;
-import com.geoffrey.mini_trello_back.project.dto.ProjectResponseDto;
+import com.geoffrey.mini_trello_back.project.dto.*;
 import com.geoffrey.mini_trello_back.project.exceptions.ProjectNotFoundException;
+import com.geoffrey.mini_trello_back.task.Task;
+import com.geoffrey.mini_trello_back.task.TaskMapper;
+import com.geoffrey.mini_trello_back.task.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,11 +17,19 @@ public class ProjectService {
     private final ProfileRepository profileRepository;
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
+    private final TaskMapper taskMapper;
+    private final TaskRepository taskRepository;
 
-    public ProjectService(ProjectRepository projectRepository, ProfileRepository profileRepository, ProjectMapper projectMapper) {
+    public ProjectService(ProjectRepository projectRepository,
+                          ProfileRepository profileRepository,
+                          ProjectMapper projectMapper,
+                          TaskMapper taskMapper,
+                          TaskRepository taskRepository) {
         this.projectRepository = projectRepository;
         this.profileRepository = profileRepository;
         this.projectMapper = projectMapper;
+        this.taskMapper = taskMapper;
+        this.taskRepository = taskRepository;
     }
 
     public List<ProjectResponseDto> listProjects() {
@@ -69,5 +77,11 @@ public class ProjectService {
     public void deleteProject(Integer projectId) {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
         projectRepository.delete(project);
+    }
+
+    public ProjectTasksResponseDto listProjectTasks(Integer projectId) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
+        List<Task> tasks = taskRepository.findTasksByProjectId(projectId);
+        return taskMapper.toProjectTasksResponseDto(tasks, project);
     }
 }

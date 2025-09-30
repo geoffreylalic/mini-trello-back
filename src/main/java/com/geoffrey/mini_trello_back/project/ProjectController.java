@@ -1,9 +1,7 @@
 package com.geoffrey.mini_trello_back.project;
 
-import com.geoffrey.mini_trello_back.project.dto.CreateProjectDto;
-import com.geoffrey.mini_trello_back.project.dto.PatchProjectDto;
-import com.geoffrey.mini_trello_back.project.dto.PatchProjectOwnerDto;
-import com.geoffrey.mini_trello_back.project.dto.ProjectResponseDto;
+import com.geoffrey.mini_trello_back.project.dto.*;
+import com.geoffrey.mini_trello_back.task.dto.TaskResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,5 +45,11 @@ public class ProjectController {
     public void patchProject(@PathVariable("projectId") Integer projectId) {
         projectService.deleteProject(projectId);
     }
+
+    @GetMapping("projects/{projectId}/tasks")
+    public ProjectTasksResponseDto getProjectTask(@PathVariable Integer projectId) {
+        return projectService.listProjectTasks(projectId);
+    }
+
 
 }
