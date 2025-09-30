@@ -1,8 +1,8 @@
 package com.geoffrey.mini_trello_back.profile;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.geoffrey.mini_trello_back.task.Task;
 import com.geoffrey.mini_trello_back.project.Project;
+import com.geoffrey.mini_trello_back.task.Task;
 import com.geoffrey.mini_trello_back.user.User;
 import jakarta.persistence.*;
 
@@ -41,6 +41,10 @@ public class Profile {
     }
 
     public Profile() {
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getId() {
