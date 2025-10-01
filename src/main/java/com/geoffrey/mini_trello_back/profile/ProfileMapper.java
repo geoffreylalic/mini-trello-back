@@ -14,7 +14,6 @@ import jakarta.validation.constraints.Past;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -57,11 +56,7 @@ public class ProfileMapper {
     }
 
     public List<ProfileResponseDto> toListProfileResponseDto(List<Profile> profiles) {
-        List<ProfileResponseDto> profileResponseDtoList = new ArrayList<ProfileResponseDto>();
-        for (Profile profile : profiles) {
-            profileResponseDtoList.add(toProfileResponseDto(profile));
-        }
-        return profileResponseDtoList;
+        return profiles.stream().map(this::toProfileResponseDto).toList();
     }
 
     public SimpleProfileResponseDto toSimpleProfileResponseDto(Profile profile) {

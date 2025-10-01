@@ -4,7 +4,6 @@ import com.geoffrey.mini_trello_back.user.dto.CreateUserDto;
 import com.geoffrey.mini_trello_back.user.dto.UserResponseDto;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -23,10 +22,6 @@ public class UserMapper {
     }
 
     public List<UserResponseDto> toListUserResponse(List<User> users) {
-        List<UserResponseDto> res = new ArrayList<UserResponseDto>();
-        for (User user : users) {
-            res.add(toUserResponse(user));
-        }
-        return res;
+        return users.stream().map(this::toUserResponse).toList();
     }
 }
