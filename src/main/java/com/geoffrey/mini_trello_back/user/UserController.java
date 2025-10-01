@@ -1,9 +1,13 @@
 package com.geoffrey.mini_trello_back.user;
 
+import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
 import com.geoffrey.mini_trello_back.user.dto.CreateUserDto;
 import com.geoffrey.mini_trello_back.user.dto.UpdateUserDto;
 import com.geoffrey.mini_trello_back.user.dto.UserResponseDto;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +27,9 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public List<UserResponseDto> listUsers() {
-        return userService.listUsers();
+    public ResponsePaginatedDto<List<UserResponseDto>> listUsers(@PageableDefault(size = 10, page = 0) Pageable pageable) {
+        return userService.listUsers(pageable);
+
     }
 
     @GetMapping("/users/{id}")

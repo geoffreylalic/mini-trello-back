@@ -1,10 +1,13 @@
 package com.geoffrey.mini_trello_back.user;
 
+import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
 import com.geoffrey.mini_trello_back.user.dto.CreateUserDto;
 import com.geoffrey.mini_trello_back.user.dto.UpdateUserDto;
 import com.geoffrey.mini_trello_back.user.dto.UserResponseDto;
 import com.geoffrey.mini_trello_back.user.exceptions.UserDoesNotExistsException;
 import com.geoffrey.mini_trello_back.user.exceptions.UserEmailExistsException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,9 +32,15 @@ public class UserService {
         return userMapper.toUserResponse(newUser);
     }
 
-    public List<UserResponseDto> listUsers() {
-        List<User> users = userRepository.findAll();
-        return userMapper.toListUserResponse(users);
+    public ResponsePaginatedDto<List<UserResponseDto>> listUsers(Pageable pageable) {
+        Page<UserResponseDto> page = userRepository.findAll(pageable).map(userMapper::toUserResponse);
+        return new ResponsePaginatedDto<>(
+                page.getContent(),
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 
     public UserResponseDto getUserById(int userId) {

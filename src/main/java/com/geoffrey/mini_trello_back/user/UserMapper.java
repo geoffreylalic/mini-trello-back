@@ -2,9 +2,11 @@ package com.geoffrey.mini_trello_back.user;
 
 import com.geoffrey.mini_trello_back.user.dto.CreateUserDto;
 import com.geoffrey.mini_trello_back.user.dto.UserResponseDto;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Component
 public class UserMapper {

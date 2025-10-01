@@ -3,7 +3,6 @@ package com.geoffrey.mini_trello_back.project;
 import com.geoffrey.mini_trello_back.profile.Profile;
 import com.geoffrey.mini_trello_back.profile.ProfileMapper;
 import com.geoffrey.mini_trello_back.profile.ProfileRepository;
-import com.geoffrey.mini_trello_back.profile.dto.SimpleProfileResponseDto;
 import com.geoffrey.mini_trello_back.profile.exceptions.ProfileNotFoundException;
 import com.geoffrey.mini_trello_back.project.dto.*;
 import com.geoffrey.mini_trello_back.project.exceptions.ProjectNotFoundException;
