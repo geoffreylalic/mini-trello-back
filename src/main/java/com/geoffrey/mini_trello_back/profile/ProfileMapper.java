@@ -3,6 +3,7 @@ package com.geoffrey.mini_trello_back.profile;
 import com.geoffrey.mini_trello_back.profile.dto.ProfileResponseDto;
 import com.geoffrey.mini_trello_back.profile.dto.SimpleProfileResponseDto;
 import com.geoffrey.mini_trello_back.project.Project;
+import com.geoffrey.mini_trello_back.project.dto.ProjectMembersDto;
 import com.geoffrey.mini_trello_back.task.Task;
 import com.geoffrey.mini_trello_back.user.User;
 import com.geoffrey.mini_trello_back.user.UserMapper;
@@ -78,5 +79,15 @@ public class ProfileMapper {
                 dateOfBirth,
                 role
         );
+    }
+
+    public List<SimpleProfileResponseDto> toListSimpleProfileResponseDto(List<Profile> profiles) {
+        return profiles.stream().map(this::toSimpleProfileResponseDto).toList();
+    }
+
+    public ProjectMembersDto toProjectMembersDto(Profile owner, List<Profile> profiles) {
+        SimpleProfileResponseDto ownerDto = toSimpleProfileResponseDto(owner);
+        List<SimpleProfileResponseDto> membersDto = toListSimpleProfileResponseDto(profiles);
+        return new ProjectMembersDto(ownerDto, membersDto);
     }
 }

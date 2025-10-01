@@ -1,7 +1,9 @@
 package com.geoffrey.mini_trello_back.project;
 
 import com.geoffrey.mini_trello_back.profile.Profile;
+import com.geoffrey.mini_trello_back.profile.ProfileMapper;
 import com.geoffrey.mini_trello_back.profile.ProfileRepository;
+import com.geoffrey.mini_trello_back.profile.dto.SimpleProfileResponseDto;
 import com.geoffrey.mini_trello_back.profile.exceptions.ProfileNotFoundException;
 import com.geoffrey.mini_trello_back.project.dto.*;
 import com.geoffrey.mini_trello_back.project.exceptions.ProjectNotFoundException;
@@ -19,17 +21,20 @@ public class ProjectService {
     private final ProjectMapper projectMapper;
     private final TaskMapper taskMapper;
     private final TaskRepository taskRepository;
+    private final ProfileMapper profileMapper;
 
     public ProjectService(ProjectRepository projectRepository,
                           ProfileRepository profileRepository,
                           ProjectMapper projectMapper,
                           TaskMapper taskMapper,
-                          TaskRepository taskRepository) {
+                          TaskRepository taskRepository,
+                          ProfileMapper profileMapper) {
         this.projectRepository = projectRepository;
         this.profileRepository = profileRepository;
         this.projectMapper = projectMapper;
         this.taskMapper = taskMapper;
         this.taskRepository = taskRepository;
+        this.profileMapper = profileMapper;
     }
 
     public List<ProjectResponseDto> listProjects() {
@@ -83,5 +88,11 @@ public class ProjectService {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
         List<Task> tasks = taskRepository.findTasksByProjectId(projectId);
         return taskMapper.toProjectTasksResponseDto(tasks, project);
+    }
+
+    public ProjectMembersDto listProjectMembers(Integer projectId) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
+        List<Profile> profiles = profileRepository.findProfilesByRelatedProject(projectId);
+        return profileMapper.toProjectMembersDto(project.getOwner(), profiles);
     }
 }

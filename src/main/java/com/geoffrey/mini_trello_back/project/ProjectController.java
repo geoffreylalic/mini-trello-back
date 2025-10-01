@@ -1,7 +1,7 @@
 package com.geoffrey.mini_trello_back.project;
 
+import com.geoffrey.mini_trello_back.profile.dto.SimpleProfileResponseDto;
 import com.geoffrey.mini_trello_back.project.dto.*;
-import com.geoffrey.mini_trello_back.task.dto.TaskResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,8 +47,13 @@ public class ProjectController {
     }
 
     @GetMapping("projects/{projectId}/tasks")
-    public ProjectTasksResponseDto getProjectTask(@PathVariable Integer projectId) {
+    public ProjectTasksResponseDto getProjectTasks(@PathVariable Integer projectId) {
         return projectService.listProjectTasks(projectId);
+    }
+
+    @GetMapping("projects/{projectId}/members")
+    public ProjectMembersDto getProjectMembers(@PathVariable Integer projectId) {
+        return projectService.listProjectMembers(projectId);
     }
 
 
