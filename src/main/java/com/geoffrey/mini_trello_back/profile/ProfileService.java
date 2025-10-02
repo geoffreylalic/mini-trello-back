@@ -74,13 +74,20 @@ public class ProfileService {
     }
 
     public ResponsePaginatedDto<List<SimpleProjectDto>> getProjectsProfile(Integer profileId, Pageable pageable) {
-        profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
+        boolean exists = profileRepository.existsById(profileId);
+        if (!exists) {
+            throw new ProfileNotFoundException(profileId);
+        }
+
         Page<SimpleProjectDto> page = profileRepository.findRelatedProjects(profileId, pageable).map(projectMapper::toSimpleProjectDto);
         return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
 
     public ResponsePaginatedDto<List<ProfileTasksDto>> getTasksProfiles(int profileId, Pageable pageable) {
-        profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
+        boolean exists = profileRepository.existsById(profileId);
+        if (!exists) {
+            throw new ProfileNotFoundException(profileId);
+        }
         Page<ProfileTasksDto> page = taskRepository.findTasksByAssignedToId(profileId, pageable).map(taskMapper::toProfileTasksDto);
         return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
