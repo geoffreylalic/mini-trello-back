@@ -1,20 +1,22 @@
 package com.geoffrey.mini_trello_back.profile;
 
+import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
+import com.geoffrey.mini_trello_back.common.ResponsePaginatedMapper;
 import com.geoffrey.mini_trello_back.profile.dto.CreateProfileDto;
 import com.geoffrey.mini_trello_back.profile.dto.PatchProfileDto;
 import com.geoffrey.mini_trello_back.profile.dto.ProfileResponseDto;
 import com.geoffrey.mini_trello_back.profile.exceptions.ProfileNotFoundException;
 import com.geoffrey.mini_trello_back.profile.exceptions.ProfileUserAlreadyExistsException;
-import com.geoffrey.mini_trello_back.project.Project;
 import com.geoffrey.mini_trello_back.project.ProjectMapper;
 import com.geoffrey.mini_trello_back.project.dto.SimpleProjectDto;
-import com.geoffrey.mini_trello_back.task.Task;
 import com.geoffrey.mini_trello_back.task.TaskMapper;
 import com.geoffrey.mini_trello_back.task.TaskRepository;
 import com.geoffrey.mini_trello_back.task.dto.ProfileTasksDto;
 import com.geoffrey.mini_trello_back.user.User;
 import com.geoffrey.mini_trello_back.user.UserRepository;
 import com.geoffrey.mini_trello_back.user.exceptions.UserDoesNotExistsException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,14 +30,16 @@ public class ProfileService {
     private final ProjectMapper projectMapper;
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
+    private final ResponsePaginatedMapper responsePaginatedMapper;
 
-    public ProfileService(ProfileRepository profileRepository, UserRepository userRepository, ProfileMapper profileMapper, ProjectMapper projectMapper, TaskRepository taskRepository, TaskMapper taskMapper) {
+    public ProfileService(ProfileRepository profileRepository, UserRepository userRepository, ProfileMapper profileMapper, ProjectMapper projectMapper, TaskRepository taskRepository, TaskMapper taskMapper, ResponsePaginatedMapper responsePaginatedMapper) {
         this.profileRepository = profileRepository;
         this.profileMapper = profileMapper;
         this.userRepository = userRepository;
         this.projectMapper = projectMapper;
         this.taskRepository = taskRepository;
         this.taskMapper = taskMapper;
+        this.responsePaginatedMapper = responsePaginatedMapper;
     }
 
     public ProfileResponseDto createProfile(CreateProfileDto profileDto) {
@@ -52,9 +56,9 @@ public class ProfileService {
         return profileMapper.toProfileResponseDto(profile);
     }
 
-    public List<ProfileResponseDto> listProfiles() {
-        List<Profile> profiles = profileRepository.findAll();
-        return profileMapper.toListProfileResponseDto(profiles);
+    public ResponsePaginatedDto<List<ProfileResponseDto>> listProfiles(Pageable pageable) {
+        Page<ProfileResponseDto> page = profileRepository.findAll(pageable).map(profileMapper::toProfileResponseDto);
+        return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
 
     public ProfileResponseDto getProfile(int profileId) {
@@ -69,16 +73,15 @@ public class ProfileService {
         return profileMapper.toProfileResponseDto(newProfile);
     }
 
-    public List<SimpleProjectDto> getProjectsProfile(Integer profileId) {
-
+    public ResponsePaginatedDto<List<SimpleProjectDto>> getProjectsProfile(Integer profileId, Pageable pageable) {
         profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
-        List<Project> projects = profileRepository.findRelatedProjects(profileId);
-        return projectMapper.toListSimpleProjectDto(projects);
+        Page<SimpleProjectDto> page = profileRepository.findRelatedProjects(profileId, pageable).map(projectMapper::toSimpleProjectDto);
+        return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
 
-    public List<ProfileTasksDto> getTasksProfiles(int profileId) {
+    public ResponsePaginatedDto<List<ProfileTasksDto>> getTasksProfiles(int profileId, Pageable pageable) {
         profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
-        List<Task> tasks = taskRepository.findTasksByAssignedToId(profileId);
-        return taskMapper.toListProfileTasksDto(tasks);
+        Page<ProfileTasksDto> page = taskRepository.findTasksByAssignedToId(profileId, pageable).map(taskMapper::toProfileTasksDto);
+        return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
 }

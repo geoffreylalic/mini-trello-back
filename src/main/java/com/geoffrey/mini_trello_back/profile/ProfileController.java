@@ -1,12 +1,14 @@
 package com.geoffrey.mini_trello_back.profile;
 
+import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
 import com.geoffrey.mini_trello_back.profile.dto.CreateProfileDto;
 import com.geoffrey.mini_trello_back.profile.dto.PatchProfileDto;
 import com.geoffrey.mini_trello_back.profile.dto.ProfileResponseDto;
 import com.geoffrey.mini_trello_back.project.dto.SimpleProjectDto;
 import com.geoffrey.mini_trello_back.task.dto.ProfileTasksDto;
-import com.geoffrey.mini_trello_back.task.dto.SimpleTaskResponseDto;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,8 +27,8 @@ public class ProfileController {
     }
 
     @GetMapping("profiles")
-    public List<ProfileResponseDto> listProfiles() {
-        return profileService.listProfiles();
+    public ResponsePaginatedDto<List<ProfileResponseDto>> listProfiles(@PageableDefault Pageable pageable) {
+        return profileService.listProfiles(pageable);
     }
 
     @GetMapping("profiles/{profile_id}")
@@ -40,12 +42,12 @@ public class ProfileController {
     }
 
     @GetMapping("profiles/{profile_id}/projects")
-    public List<SimpleProjectDto> getProjectsProfile(@PathVariable("profile_id") int profileId) {
-        return profileService.getProjectsProfile(profileId);
+    public ResponsePaginatedDto<List<SimpleProjectDto>> getProjectsProfile(@PathVariable("profile_id") int profileId, @PageableDefault Pageable pageable) {
+        return profileService.getProjectsProfile(profileId, pageable);
     }
 
     @GetMapping("profiles/{profile_id}/tasks")
-    public List<ProfileTasksDto> getTasksProfiles(@PathVariable("profile_id") int profileId) {
-        return profileService.getTasksProfiles(profileId);
+    public ResponsePaginatedDto<List<ProfileTasksDto>> getTasksProfiles(@PathVariable("profile_id") int profileId, @PageableDefault Pageable pageable) {
+        return profileService.getTasksProfiles(profileId, pageable);
     }
 }
