@@ -32,4 +32,11 @@ public interface ProfileRepository extends JpaRepository<Profile, Integer> {
             "LEFT JOIN t.project proj " +
             "WHERE proj.id = :projectId AND prof IS NOT NULL")
     List<Profile> findProfilesByRelatedProject(Integer projectId);
+
+    @Query("SELECT DISTINCT prof " +
+            "FROM Task t " +
+            "LEFT JOIN t.assignedTo prof " +
+            "LEFT JOIN t.project proj " +
+            "WHERE proj.id = :projectId AND prof IS NOT NULL")
+    Page<Profile> findProfilesByRelatedProject(Integer projectId, Pageable pageable);
 }

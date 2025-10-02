@@ -9,6 +9,8 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Integer> {
     List<Task> findTasksByProjectId(Integer projectId);
 
+    Page<Task> findTasksByProjectId(Integer projectId, Pageable pageable);
+
     List<Task> findTasksByAssignedToId(Integer projectId);
 
     Page<Task> findTasksByAssignedToId(Integer projectId, Pageable pageable);

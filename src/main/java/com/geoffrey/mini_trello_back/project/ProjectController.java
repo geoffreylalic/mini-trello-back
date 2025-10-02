@@ -1,8 +1,15 @@
 package com.geoffrey.mini_trello_back.project;
 
+import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
 import com.geoffrey.mini_trello_back.profile.dto.SimpleProfileResponseDto;
-import com.geoffrey.mini_trello_back.project.dto.*;
+import com.geoffrey.mini_trello_back.project.dto.CreateProjectDto;
+import com.geoffrey.mini_trello_back.project.dto.PatchProjectDto;
+import com.geoffrey.mini_trello_back.project.dto.PatchProjectOwnerDto;
+import com.geoffrey.mini_trello_back.project.dto.ProjectResponseDto;
+import com.geoffrey.mini_trello_back.task.dto.SimpleTaskResponseDto;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,8 +29,8 @@ public class ProjectController {
     }
 
     @GetMapping("projects")
-    public List<ProjectResponseDto> getProjects() {
-        return projectService.listProjects();
+    public ResponsePaginatedDto<List<ProjectResponseDto>> getProjects(@PageableDefault Pageable pageable) {
+        return projectService.listProjects(pageable);
     }
 
     @GetMapping("projects/{projectId}")
@@ -47,14 +54,13 @@ public class ProjectController {
     }
 
     @GetMapping("projects/{projectId}/tasks")
-    public ProjectTasksResponseDto getProjectTasks(@PathVariable Integer projectId) {
-        return projectService.listProjectTasks(projectId);
+    public ResponsePaginatedDto<List<SimpleTaskResponseDto>> getProjectTasks(@PathVariable Integer projectId, @PageableDefault Pageable pageable) {
+        return projectService.listProjectTasks(projectId, pageable);
     }
 
     @GetMapping("projects/{projectId}/members")
-    public ProjectMembersDto getProjectMembers(@PathVariable Integer projectId) {
-        return projectService.listProjectMembers(projectId);
+    public ResponsePaginatedDto<List<SimpleProfileResponseDto>> getProjectMembers(@PathVariable Integer projectId, @PageableDefault Pageable pageable) {
+        return projectService.listProjectMembers(projectId, pageable);
     }
-
 
 }

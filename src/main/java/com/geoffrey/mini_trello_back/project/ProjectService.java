@@ -1,14 +1,22 @@
 package com.geoffrey.mini_trello_back.project;
 
+import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
+import com.geoffrey.mini_trello_back.common.ResponsePaginatedMapper;
 import com.geoffrey.mini_trello_back.profile.Profile;
 import com.geoffrey.mini_trello_back.profile.ProfileMapper;
 import com.geoffrey.mini_trello_back.profile.ProfileRepository;
+import com.geoffrey.mini_trello_back.profile.dto.SimpleProfileResponseDto;
 import com.geoffrey.mini_trello_back.profile.exceptions.ProfileNotFoundException;
-import com.geoffrey.mini_trello_back.project.dto.*;
+import com.geoffrey.mini_trello_back.project.dto.CreateProjectDto;
+import com.geoffrey.mini_trello_back.project.dto.PatchProjectDto;
+import com.geoffrey.mini_trello_back.project.dto.PatchProjectOwnerDto;
+import com.geoffrey.mini_trello_back.project.dto.ProjectResponseDto;
 import com.geoffrey.mini_trello_back.project.exceptions.ProjectNotFoundException;
-import com.geoffrey.mini_trello_back.task.Task;
 import com.geoffrey.mini_trello_back.task.TaskMapper;
 import com.geoffrey.mini_trello_back.task.TaskRepository;
+import com.geoffrey.mini_trello_back.task.dto.SimpleTaskResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,24 +29,26 @@ public class ProjectService {
     private final TaskMapper taskMapper;
     private final TaskRepository taskRepository;
     private final ProfileMapper profileMapper;
+    private final ResponsePaginatedMapper responsePaginatedMapper;
 
     public ProjectService(ProjectRepository projectRepository,
                           ProfileRepository profileRepository,
                           ProjectMapper projectMapper,
                           TaskMapper taskMapper,
                           TaskRepository taskRepository,
-                          ProfileMapper profileMapper) {
+                          ProfileMapper profileMapper, ResponsePaginatedMapper responsePaginatedMapper) {
         this.projectRepository = projectRepository;
         this.profileRepository = profileRepository;
         this.projectMapper = projectMapper;
         this.taskMapper = taskMapper;
         this.taskRepository = taskRepository;
         this.profileMapper = profileMapper;
+        this.responsePaginatedMapper = responsePaginatedMapper;
     }
 
-    public List<ProjectResponseDto> listProjects() {
-        List<Project> projects = projectRepository.findAll();
-        return projectMapper.toListProjectResponseDto(projects);
+    public ResponsePaginatedDto<List<ProjectResponseDto>> listProjects(Pageable pageable) {
+        Page<ProjectResponseDto> page = projectRepository.findAll(pageable).map(projectMapper::toProjectResponseDto);
+        return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
 
     public ProjectResponseDto createProject(CreateProjectDto projectDto) {
@@ -83,15 +93,15 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
-    public ProjectTasksResponseDto listProjectTasks(Integer projectId) {
+    public ResponsePaginatedDto<List<SimpleTaskResponseDto>> listProjectTasks(Integer projectId, Pageable pageable) {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
-        List<Task> tasks = taskRepository.findTasksByProjectId(projectId);
-        return taskMapper.toProjectTasksResponseDto(tasks, project);
+        Page<SimpleTaskResponseDto> page = taskRepository.findTasksByProjectId(projectId, pageable).map(taskMapper::toSimpleTaskResponseDto);
+        return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
 
-    public ProjectMembersDto listProjectMembers(Integer projectId) {
+    public ResponsePaginatedDto<List<SimpleProfileResponseDto>> listProjectMembers(Integer projectId, Pageable pageable) {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
-        List<Profile> profiles = profileRepository.findProfilesByRelatedProject(projectId);
-        return profileMapper.toProjectMembersDto(project.getOwner(), profiles);
+        Page<SimpleProfileResponseDto> page = profileRepository.findProfilesByRelatedProject(projectId, pageable).map(profileMapper::toSimpleProfileResponseDto);
+        return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
 }
