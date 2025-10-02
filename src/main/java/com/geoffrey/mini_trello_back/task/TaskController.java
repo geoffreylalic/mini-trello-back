@@ -1,7 +1,10 @@
 package com.geoffrey.mini_trello_back.task;
 
+import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
 import com.geoffrey.mini_trello_back.task.dto.*;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,8 +18,8 @@ public class TaskController {
     }
 
     @GetMapping("tasks")
-    public List<TaskResponseDto> getTasks() {
-        return taskService.getTasks();
+    public ResponsePaginatedDto<List<TaskResponseDto>> getTasks(@PageableDefault Pageable pageable) {
+        return taskService.getTasks(pageable);
     }
 
     @PostMapping("tasks")

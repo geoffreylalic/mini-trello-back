@@ -1,5 +1,7 @@
 package com.geoffrey.mini_trello_back.task;
 
+import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
+import com.geoffrey.mini_trello_back.common.ResponsePaginatedMapper;
 import com.geoffrey.mini_trello_back.profile.Profile;
 import com.geoffrey.mini_trello_back.profile.ProfileRepository;
 import com.geoffrey.mini_trello_back.profile.exceptions.ProfileNotFoundException;
@@ -9,6 +11,8 @@ import com.geoffrey.mini_trello_back.project.exceptions.ProjectNotFoundException
 import com.geoffrey.mini_trello_back.task.dto.*;
 import com.geoffrey.mini_trello_back.task.exceptions.TaskNotFoundException;
 import com.geoffrey.mini_trello_back.task.exceptions.TaskStatusMismatchException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -21,20 +25,22 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final ProfileRepository profileRepository;
     private final ProjectRepository projectRepository;
+    private final ResponsePaginatedMapper responsePaginatedMapper;
 
     public TaskService(TaskMapper taskMapper,
                        TaskRepository taskRepository,
                        ProfileRepository profileRepository,
-                       ProjectRepository projectRepository) {
+                       ProjectRepository projectRepository, ResponsePaginatedMapper responsePaginatedMapper) {
         this.taskMapper = taskMapper;
         this.taskRepository = taskRepository;
         this.profileRepository = profileRepository;
         this.projectRepository = projectRepository;
+        this.responsePaginatedMapper = responsePaginatedMapper;
     }
 
-    public List<TaskResponseDto> getTasks() {
-        List<Task> tasks = taskRepository.findAll();
-        return taskMapper.toListTaskResponseDto(tasks);
+    public ResponsePaginatedDto<List<TaskResponseDto>> getTasks(Pageable pageable) {
+        Page<TaskResponseDto> page = taskRepository.findAll(pageable).map(taskMapper::toTaskResponseDto);
+        return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
 
     public TaskResponseDto createTask(CreateTaskDto taskDto) {
