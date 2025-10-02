@@ -1,6 +1,7 @@
 package com.geoffrey.mini_trello_back.user;
 
 import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
+import com.geoffrey.mini_trello_back.common.ResponsePaginatedMapper;
 import com.geoffrey.mini_trello_back.user.dto.CreateUserDto;
 import com.geoffrey.mini_trello_back.user.dto.UpdateUserDto;
 import com.geoffrey.mini_trello_back.user.dto.UserResponseDto;
@@ -16,10 +17,12 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ResponsePaginatedMapper responsePaginatedMapper;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, ResponsePaginatedMapper responsePaginatedMapper) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.responsePaginatedMapper = responsePaginatedMapper;
     }
 
     public UserResponseDto createUser(CreateUserDto userDto) {
@@ -34,13 +37,7 @@ public class UserService {
 
     public ResponsePaginatedDto<List<UserResponseDto>> listUsers(Pageable pageable) {
         Page<UserResponseDto> page = userRepository.findAll(pageable).map(userMapper::toUserResponse);
-        return new ResponsePaginatedDto<>(
-                page.getContent(),
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                page.getTotalElements(),
-                page.getTotalPages()
-        );
+        return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
 
     public UserResponseDto getUserById(int userId) {
