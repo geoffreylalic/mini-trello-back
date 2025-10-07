@@ -48,15 +48,9 @@ public class UserService {
 
     public UserResponseDto patchUserById(int userId, UpdateUserDto userDto) {
         User user = userRepository.findUserById(userId).orElseThrow(() -> new UserDoesNotExistsException(userId));
-        if (userDto.email() != null) {
-            user.setEmail(userDto.email());
-        }
-        if (userDto.password() != null) {
-            user.setPassword(userDto.password());
-        }
+        userMapper.mergeUser(user, userDto);
         userRepository.save(user);
         return userMapper.toUserResponse(user);
-
     }
 
     public void deleteUserById(int userId) {
