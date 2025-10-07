@@ -60,8 +60,9 @@ public class ProjectService {
     }
 
     public ProjectResponseDto getProject(Integer projectId) {
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
-        return projectMapper.toProjectResponseDto(project);
+        return projectRepository.findById(projectId)
+                .map(projectMapper::toProjectResponseDto)
+                .orElseThrow(() -> new ProjectNotFoundException(projectId));
     }
 
     public ProjectResponseDto patchProject(Integer projectId, PatchProjectDto projectDto) {
@@ -89,19 +90,34 @@ public class ProjectService {
     }
 
     public void deleteProject(Integer projectId) {
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
+        Project project = projectRepository
+                .findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException(projectId));
         projectRepository.delete(project);
     }
 
     public ResponsePaginatedDto<List<SimpleTaskResponseDto>> listProjectTasks(Integer projectId, Pageable pageable) {
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
-        Page<SimpleTaskResponseDto> page = taskRepository.findTasksByProjectId(projectId, pageable).map(taskMapper::toSimpleTaskResponseDto);
+        checkProject(projectId);
+        Page<SimpleTaskResponseDto> page = taskRepository
+                .findTasksByProjectId(projectId, pageable)
+                .map(taskMapper::toSimpleTaskResponseDto);
         return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
 
+
     public ResponsePaginatedDto<List<SimpleProfileResponseDto>> listProjectMembers(Integer projectId, Pageable pageable) {
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
-        Page<SimpleProfileResponseDto> page = profileRepository.findProfilesByRelatedProject(projectId, pageable).map(profileMapper::toSimpleProfileResponseDto);
+        checkProject(projectId);
+        Page<SimpleProfileResponseDto> page = profileRepository
+                .findProfilesByRelatedProject(projectId, pageable)
+                .map(profileMapper::toSimpleProfileResponseDto);
         return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
+
+    private void checkProject(Integer projectId) {
+        boolean exists = projectRepository.existsById(projectId);
+        if (!exists) {
+            throw new ProjectNotFoundException(projectId);
+        }
+    }
+
 }
