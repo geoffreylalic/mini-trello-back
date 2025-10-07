@@ -6,8 +6,6 @@ import com.geoffrey.mini_trello_back.user.dto.UserResponseDto;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-
 @Component
 public class UserMapper {
     public User toUser(CreateUserDto userDto) {
@@ -21,10 +19,6 @@ public class UserMapper {
 
     public UserResponseDto toUserResponse(User user) {
         return new UserResponseDto(user.getId(), user.getEmail(), user.getFirstName(), user.getLastName());
-    }
-
-    public List<UserResponseDto> toListUserResponse(List<User> users) {
-        return users.stream().map(this::toUserResponse).toList();
     }
 
     public void mergeUser(User user, UpdateUserDto userDto) {
