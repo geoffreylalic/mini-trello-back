@@ -3,14 +3,16 @@ package com.geoffrey.mini_trello_back.profile;
 import com.geoffrey.mini_trello_back.profile.dto.ProfileResponseDto;
 import com.geoffrey.mini_trello_back.profile.dto.SimpleProfileResponseDto;
 import com.geoffrey.mini_trello_back.project.Project;
+import com.geoffrey.mini_trello_back.project.ProjectMapper;
 import com.geoffrey.mini_trello_back.project.dto.ProjectMembersDto;
 import com.geoffrey.mini_trello_back.task.Task;
 import com.geoffrey.mini_trello_back.user.User;
 import com.geoffrey.mini_trello_back.user.UserMapper;
-import com.geoffrey.mini_trello_back.user.UserRepository;
 import com.geoffrey.mini_trello_back.user.dto.UserResponseDto;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -20,13 +22,18 @@ import java.util.List;
 public class ProfileMapper {
 
     UserMapper userMapper;
-    UserRepository userRepository;
+    ProjectMapper projectMapper;
 
-
-    public ProfileMapper(UserMapper userMapper, UserRepository userRepository) {
+    @Autowired
+    public void setUserMapper(UserMapper userMapper) {
         this.userMapper = userMapper;
-        this.userRepository = userRepository;
     }
+
+    @Autowired
+    public void setProjectMapper(@Lazy ProjectMapper projectMapper) {
+        this.projectMapper = projectMapper;
+    }
+
 
     public Profile userToProfile(User user, @Past @NotNull LocalDate dateOfBirth, @NotNull Role role) {
         Profile profile = new Profile();
