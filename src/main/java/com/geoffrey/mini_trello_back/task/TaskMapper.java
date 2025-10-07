@@ -11,8 +11,6 @@ import com.geoffrey.mini_trello_back.task.dto.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-
 @Component
 public class TaskMapper {
     private final ProfileMapper profileMapper;
@@ -46,10 +44,6 @@ public class TaskMapper {
         );
     }
 
-    public List<TaskResponseDto> toListTaskResponseDto(List<Task> tasks) {
-        return tasks.stream().map(this::toTaskResponseDto).toList();
-    }
-
     public Task toTask(CreateTaskDto taskDto, Profile profile, Project project) {
         Task task = new Task();
         task.setTitle(taskDto.title());
@@ -69,18 +63,11 @@ public class TaskMapper {
         return new SimpleTaskResponseDto(task.getId(), task.getTitle(), task.getDescription(), task.getStatus().toString(), profile);
     }
 
-    public List<SimpleTaskResponseDto> toListSimpleTaskResponseDto(List<Task> tasks) {
-        return tasks.stream().map(this::toSimpleTaskResponseDto).toList();
-    }
-
     public ProfileTasksDto toProfileTasksDto(Task task) {
         SimpleProjectDto projectDto = projectMapper.toSimpleProjectDto(task.getProject());
         return new ProfileTasksDto(task.getId(), task.getTitle(), task.getDescription(), task.getStatus().toString(), projectDto);
     }
 
-    public List<ProfileTasksDto> toListProfileTasksDto(List<Task> tasks) {
-        return tasks.stream().map(this::toProfileTasksDto).toList();
-    }
 
     public void mergeTask(Task task, UpdateTaskDto taskDto) {
         if (StringUtils.hasLength(taskDto.title())) {
