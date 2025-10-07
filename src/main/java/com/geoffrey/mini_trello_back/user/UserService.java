@@ -41,8 +41,9 @@ public class UserService {
     }
 
     public UserResponseDto getUserById(int userId) {
-        User user = userRepository.findUserById(userId).orElseThrow(() -> new UserDoesNotExistsException(userId));
-        return userMapper.toUserResponse(user);
+        return userRepository.findUserById(userId)
+                .map(userMapper::toUserResponse)
+                .orElseThrow(() -> new UserDoesNotExistsException(userId));
     }
 
     public UserResponseDto patchUserById(int userId, UpdateUserDto userDto) {
