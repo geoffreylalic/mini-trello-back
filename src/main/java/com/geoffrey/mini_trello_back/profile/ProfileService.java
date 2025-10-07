@@ -62,8 +62,9 @@ public class ProfileService {
     }
 
     public ProfileResponseDto getProfile(int profileId) {
-        Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
-        return profileMapper.toProfileResponseDto(profile);
+        return profileRepository.findById(profileId)
+                .map(profileMapper::toProfileResponseDto)
+                .orElseThrow(() -> new ProfileNotFoundException(profileId));
     }
 
     public ProfileResponseDto patchProfile(PatchProfileDto profileDto, int profileId) {

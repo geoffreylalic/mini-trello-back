@@ -1,7 +1,6 @@
 package com.geoffrey.mini_trello_back.profile.dto;
 
-import com.geoffrey.mini_trello_back.profile.Role;
-import com.geoffrey.mini_trello_back.project.Project;
+import com.geoffrey.mini_trello_back.project.dto.SimpleProjectDto;
 import com.geoffrey.mini_trello_back.task.Task;
 import com.geoffrey.mini_trello_back.user.dto.UserResponseDto;
 
@@ -12,6 +11,6 @@ public record ProfileResponseDto(Integer id,
                                  UserResponseDto user,
                                  LocalDate dateOfBirth,
                                  String role,
-                                 List<Project> projects,
+                                 List<SimpleProjectDto> projects,
                                  List<Task> tasks) {
 }

@@ -2,9 +2,9 @@ package com.geoffrey.mini_trello_back.profile;
 
 import com.geoffrey.mini_trello_back.profile.dto.ProfileResponseDto;
 import com.geoffrey.mini_trello_back.profile.dto.SimpleProfileResponseDto;
-import com.geoffrey.mini_trello_back.project.Project;
 import com.geoffrey.mini_trello_back.project.ProjectMapper;
 import com.geoffrey.mini_trello_back.project.dto.ProjectMembersDto;
+import com.geoffrey.mini_trello_back.project.dto.SimpleProjectDto;
 import com.geoffrey.mini_trello_back.task.Task;
 import com.geoffrey.mini_trello_back.user.User;
 import com.geoffrey.mini_trello_back.user.UserMapper;
@@ -49,7 +49,7 @@ public class ProfileMapper {
         UserResponseDto userResponseDto = userMapper.toUserResponse(profile.getUser());
         LocalDate dateOfBirth = profile.getDateOfBirth();
         String role = profile.getRole().name();
-        List<Project> projects = profile.getProjects();
+        List<SimpleProjectDto> projects = profile.getProjects().stream().map(projectMapper::toSimpleProjectDto).toList();
         List<Task> tasks = profile.getTasks();
 
         return new ProfileResponseDto(
