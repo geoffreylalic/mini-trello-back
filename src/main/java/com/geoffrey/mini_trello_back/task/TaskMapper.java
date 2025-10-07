@@ -7,11 +7,9 @@ import com.geoffrey.mini_trello_back.project.Project;
 import com.geoffrey.mini_trello_back.project.ProjectMapper;
 import com.geoffrey.mini_trello_back.project.dto.ProjectResponseDto;
 import com.geoffrey.mini_trello_back.project.dto.SimpleProjectDto;
-import com.geoffrey.mini_trello_back.task.dto.CreateTaskDto;
-import com.geoffrey.mini_trello_back.task.dto.ProfileTasksDto;
-import com.geoffrey.mini_trello_back.task.dto.SimpleTaskResponseDto;
-import com.geoffrey.mini_trello_back.task.dto.TaskResponseDto;
+import com.geoffrey.mini_trello_back.task.dto.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -84,4 +82,12 @@ public class TaskMapper {
         return tasks.stream().map(this::toProfileTasksDto).toList();
     }
 
+    public void mergeTask(Task task, UpdateTaskDto taskDto) {
+        if (StringUtils.hasLength(taskDto.title())) {
+            task.setTitle(taskDto.title());
+        }
+        if (taskDto.description() != null) {
+            task.setDescription(taskDto.description());
+        }
+    }
 }

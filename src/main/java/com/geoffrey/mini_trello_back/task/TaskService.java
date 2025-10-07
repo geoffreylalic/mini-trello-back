@@ -65,16 +65,8 @@ public class TaskService {
 
     public TaskResponseDto patchTask(Integer taskId, UpdateTaskDto taskDto) {
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException(taskId));
-        String title = taskDto.title();
-        String description = taskDto.description();
 
-        if (title != null) {
-            task.setTitle(title);
-        }
-        if (description != null) {
-            task.setDescription(description);
-        }
-
+        taskMapper.mergeTask(task, taskDto);
         Task updateTask = taskRepository.save(task);
 
         return taskMapper.toTaskResponseDto(updateTask);
