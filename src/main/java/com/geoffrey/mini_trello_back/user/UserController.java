@@ -1,10 +1,7 @@
 package com.geoffrey.mini_trello_back.user;
 
 import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
-import com.geoffrey.mini_trello_back.user.dto.CreateUserDto;
-import com.geoffrey.mini_trello_back.user.dto.UpdateUserDto;
-import com.geoffrey.mini_trello_back.user.dto.UserResponseDto;
-import com.geoffrey.mini_trello_back.user.dto.UserRoleDto;
+import com.geoffrey.mini_trello_back.user.dto.*;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -52,6 +49,11 @@ public class UserController {
     @PatchMapping("/{id}/role")
     public UserResponseDto updateUserRole(@PathVariable("id") int userId, @Valid @RequestBody UserRoleDto userRoleDto) {
         return userService.updateUserRole(userId, userRoleDto);
+    }
+
+    @PatchMapping("/{id}/password")
+    public UserResponseDto changePassword(@PathVariable("id") int userId, ChangePasswordDto newPasswordDto) {
+        return userService.changePassword(userId, newPasswordDto);
     }
 
 }

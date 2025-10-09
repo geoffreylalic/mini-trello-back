@@ -20,13 +20,4 @@ public class UserMapper {
     public UserResponseDto toUserResponse(User user) {
         return new UserResponseDto(user.getId(), user.getEmail(), user.getFirstName(), user.getLastName(), user.getRole().getName());
     }
-
-    public void mergeUser(User user, UpdateUserDto userDto) {
-        if (StringUtils.hasLength(userDto.email())) {
-            user.setEmail(userDto.email());
-        }
-        if (StringUtils.hasLength(userDto.password())) {
-            user.setPassword(userDto.password());
-        }
-    }
 }

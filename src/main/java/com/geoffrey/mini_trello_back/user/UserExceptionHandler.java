@@ -3,6 +3,7 @@ package com.geoffrey.mini_trello_back.user;
 import com.geoffrey.mini_trello_back.common.ApiError;
 import com.geoffrey.mini_trello_back.user.exceptions.UserDoesNotExistsException;
 import com.geoffrey.mini_trello_back.user.exceptions.UserEmailExistsException;
+import com.geoffrey.mini_trello_back.user.exceptions.UserPasswordInvalid;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,13 @@ public class UserExceptionHandler {
     public ResponseEntity<ApiError> handleUserDoesNotExistsError(UserDoesNotExistsException ex,
                                                                  HttpServletRequest request) {
         ApiError error = new ApiError(HttpStatus.NOT_FOUND.value(), "User not found", ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(UserPasswordInvalid.class)
+    public ResponseEntity<ApiError> handleUserDoesNotExistsError(UserPasswordInvalid ex,
+                                                                 HttpServletRequest request) {
+        ApiError error = new ApiError(HttpStatus.NOT_FOUND.value(), "Password invalid", ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 }

@@ -1,6 +1,7 @@
 package com.geoffrey.mini_trello_back.role;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.geoffrey.mini_trello_back.common.BaseEntity;
 import com.geoffrey.mini_trello_back.user.User;
 import jakarta.persistence.*;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "roles")
-public class Role {
+public class Role extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
