@@ -1,6 +1,8 @@
 package com.geoffrey.mini_trello_back.user;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.geoffrey.mini_trello_back.profile.Profile;
+import com.geoffrey.mini_trello_back.role.Role;
 import jakarta.persistence.*;
 
 @Table(name = "users")
@@ -23,11 +25,30 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Profile profile;
 
-    public User(String email, String password, String firstName, String lastName) {
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "role_id")
+    private Role role;
+
+    public User(String email, String password, String firstName, String lastName, Role role) {
         this.email = email;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.role = role;
+    }
+
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public User() {

@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - preConditions:
+      - runningAs:
+          username: mini_trello_user
+  - changeSet:
+      id: 3
+      author: geoffreylalic
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: role_id
+                  type: bigint
+        - addForeignKeyConstraint:
+            baseTableName: users
+            baseColumnNames: role_id
+            constraintName: fk_users_roles
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: roles

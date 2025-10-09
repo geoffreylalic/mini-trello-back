@@ -24,7 +24,6 @@ public class RoleServiceImpl implements RoleService {
         if (exists) {
             throw new RoleAlreadyExistsException(roleDto.name());
         }
-        ;
         Role role = roleMapper.toRole(roleDto);
         roleRepository.save(role);
         return roleMapper.toRoleResponseDto(role);

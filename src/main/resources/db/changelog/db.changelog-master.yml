@@ -3,3 +3,5 @@ databaseChangeLog:
       file: db/changelog/changelog-001-init-db.yml
   - include:
       file: db/changelog/changelog-002-create-roles.yml
+  - include:
+      file: db/changelog/changelog-003-relations-users-roles.yml

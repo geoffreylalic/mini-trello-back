@@ -1,6 +1,10 @@
 package com.geoffrey.mini_trello_back.role;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.geoffrey.mini_trello_back.user.User;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "roles")
@@ -12,9 +16,15 @@ public class Role {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @OneToMany(mappedBy = "role")
+    @JsonManagedReference
+    private List<User> users;
+
+
     public Role(String name) {
         this.name = name;
     }
+
 
     public Integer getId() {
         return id;
