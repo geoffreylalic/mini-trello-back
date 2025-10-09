@@ -6,6 +6,5 @@ import java.time.LocalDate;
 
 public record SimpleProfileResponseDto(Integer id,
                                        UserResponseDto user,
-                                       LocalDate dateOfBirth,
-                                       String role) {
+                                       LocalDate dateOfBirth) {
 }

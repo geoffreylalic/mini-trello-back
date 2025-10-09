@@ -23,9 +23,6 @@ public class Profile {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
     @OneToMany(mappedBy = "owner")
     @JsonManagedReference
     private List<Project> projects;
@@ -34,10 +31,9 @@ public class Profile {
     @JsonManagedReference
     private List<Task> tasks;
 
-    public Profile(User user, LocalDate dateOfBirth, Role role) {
+    public Profile(User user, LocalDate dateOfBirth) {
         this.user = user;
         this.dateOfBirth = dateOfBirth;
-        this.role = role;
     }
 
     public Profile() {
@@ -65,14 +61,6 @@ public class Profile {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 
     public List<Project> getProjects() {

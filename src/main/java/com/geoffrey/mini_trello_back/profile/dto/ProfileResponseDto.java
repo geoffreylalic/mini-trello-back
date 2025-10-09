@@ -10,7 +10,6 @@ import java.util.List;
 public record ProfileResponseDto(Integer id,
                                  UserResponseDto user,
                                  LocalDate dateOfBirth,
-                                 String role,
                                  List<SimpleProjectDto> projects,
                                  List<Task> tasks) {
 }

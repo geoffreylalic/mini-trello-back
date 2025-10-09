@@ -50,7 +50,7 @@ public class ProfileService {
         if (nbProfiles > 0) {
             throw new ProfileUserAlreadyExistsException(userId);
         }
-        Profile newProfile = profileMapper.userToProfile(userRequested, profileDto.dateOfBirth(), profileDto.role());
+        Profile newProfile = profileMapper.userToProfile(userRequested, profileDto.dateOfBirth());
         Profile profile = profileRepository.save(newProfile);
 
         return profileMapper.toProfileResponseDto(profile);

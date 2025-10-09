@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - preConditions:
+      - runningAs:
+          username: mini_trello_user
+  - changeSet:
+      id: 4
+      author: geoffreylalic
+      changes:
+        - dropColumn:
+            columns:
+              - column:
+                  name: role
+            tableName: profiles

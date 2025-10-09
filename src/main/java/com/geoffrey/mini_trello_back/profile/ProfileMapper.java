@@ -34,11 +34,10 @@ public class ProfileMapper {
     }
 
 
-    public Profile userToProfile(User user, @Past @NotNull LocalDate dateOfBirth, @NotNull Role role) {
+    public Profile userToProfile(User user, @Past @NotNull LocalDate dateOfBirth) {
         Profile profile = new Profile();
         profile.setUser(user);
         profile.setDateOfBirth(dateOfBirth);
-        profile.setRole(role);
         return profile;
     }
 
@@ -47,7 +46,6 @@ public class ProfileMapper {
         Integer id = profile.getId();
         UserResponseDto userResponseDto = userMapper.toUserResponse(profile.getUser());
         LocalDate dateOfBirth = profile.getDateOfBirth();
-        String role = profile.getRole().name();
         List<SimpleProjectDto> projects = profile.getProjects().stream().map(projectMapper::toSimpleProjectDto).toList();
         List<Task> tasks = profile.getTasks();
 
@@ -55,7 +53,6 @@ public class ProfileMapper {
                 id,
                 userResponseDto,
                 dateOfBirth,
-                role,
                 projects,
                 tasks
         );
@@ -68,13 +65,11 @@ public class ProfileMapper {
         Integer id = profile.getId();
         UserResponseDto userResponseDto = userMapper.toUserResponse(profile.getUser());
         LocalDate dateOfBirth = profile.getDateOfBirth();
-        String role = profile.getRole().name();
 
         return new SimpleProfileResponseDto(
                 id,
                 userResponseDto,
-                dateOfBirth,
-                role
+                dateOfBirth
         );
     }
 
