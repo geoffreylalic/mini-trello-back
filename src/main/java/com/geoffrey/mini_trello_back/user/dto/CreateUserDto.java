@@ -1,5 +1,6 @@
 package com.geoffrey.mini_trello_back.user.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
 public record CreateUserDto(
@@ -8,6 +9,8 @@ public record CreateUserDto(
         String firstName,
         String lastName,
         @NotEmpty
-        String password
+        String password,
+        @NotBlank
+        String role
 ) {
 }

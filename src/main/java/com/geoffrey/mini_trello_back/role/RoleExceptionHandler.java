@@ -3,6 +3,7 @@ package com.geoffrey.mini_trello_back.role;
 
 import com.geoffrey.mini_trello_back.common.ApiError;
 import com.geoffrey.mini_trello_back.role.exceptions.RoleAlreadyExistsException;
+import com.geoffrey.mini_trello_back.role.exceptions.RoleNameNotFound;
 import com.geoffrey.mini_trello_back.role.exceptions.RoleNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -15,16 +16,22 @@ public class RoleExceptionHandler {
 
     @ExceptionHandler(RoleAlreadyExistsException.class)
     public ResponseEntity<ApiError> handleRoleAlreadyExistsError(RoleAlreadyExistsException ex, HttpServletRequest request) {
-        ApiError error = new ApiError(HttpStatus.BAD_REQUEST.value(), "Profile already exists.", ex.getMessage(), request.getRequestURI());
+        ApiError error = new ApiError(HttpStatus.BAD_REQUEST.value(), "Role already exists.", ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 
     }
 
     @ExceptionHandler(RoleNotFoundException.class)
     public ResponseEntity<ApiError> handleRoleNotFoundError(RoleNotFoundException ex, HttpServletRequest request) {
-        ApiError error = new ApiError(HttpStatus.BAD_REQUEST.value(), "Profile already exists.", ex.getMessage(), request.getRequestURI());
+        ApiError error = new ApiError(HttpStatus.BAD_REQUEST.value(), "Role id not found.", ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 
     }
 
+    @ExceptionHandler(RoleNameNotFound.class)
+    public ResponseEntity<ApiError> handleRoleNotFoundError(RoleNameNotFound ex, HttpServletRequest request) {
+        ApiError error = new ApiError(HttpStatus.BAD_REQUEST.value(), "Role name not found.", ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+
+    }
 }
