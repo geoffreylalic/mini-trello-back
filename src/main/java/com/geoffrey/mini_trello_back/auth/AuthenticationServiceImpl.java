@@ -52,7 +52,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = (User) auth.getPrincipal();
 
         String accessToken = jwtService.generateAccessToken(user.getUsername());
-        String refreshToken = jwtService.generateAccessToken(user.getUsername());
+        String refreshToken = jwtService.generateRefreshToken(user.getUsername());
 
         return authMapper.toAuthResponseDto(user, accessToken, refreshToken);
     }
