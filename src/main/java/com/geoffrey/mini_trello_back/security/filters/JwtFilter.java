@@ -1,5 +1,6 @@
-package com.geoffrey.mini_trello_back.security;
+package com.geoffrey.mini_trello_back.security.filters;
 
+import com.geoffrey.mini_trello_back.security.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,5 +1,6 @@
 package com.geoffrey.mini_trello_back.security;
 
+import com.geoffrey.mini_trello_back.security.filters.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -22,9 +23,7 @@ public class SecurityConfig {
     }
 
     public static final String[] PUBLIC_URLS = {
-            "/auth/register",
-            "/auth/login",
-            "/auth/refresh",
+            "/auth/**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
