@@ -35,6 +35,7 @@ public class ApiFilter extends OncePerRequestFilter {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header == null) {
             filterChain.doFilter(request, response);
+            return;
         }
 
         String token = header.replace("Bearer ", "");
