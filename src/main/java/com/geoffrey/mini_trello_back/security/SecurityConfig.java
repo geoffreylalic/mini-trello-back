@@ -1,6 +1,5 @@
 package com.geoffrey.mini_trello_back.security;
 
-import com.geoffrey.mini_trello_back.security.filters.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -16,38 +15,48 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
+    private final ApiFilter apiFilter;
 
-    public SecurityConfig(JwtFilter jwtFilter) {
-        this.jwtFilter = jwtFilter;
+    public SecurityConfig(ApiFilter apiFilter) {
+        this.apiFilter = apiFilter;
     }
 
-    public static final String[] PUBLIC_URLS = {
+    private static final String[] PUBLIC_URLS = {
             "/auth/**",
             "/v2/api-docs",
-            "/v3/api-docs",
             "/v3/api-docs/**",
-            "/swagger-ressources/",
-            "/swagger-ressources/**",
-            "configuration/ui",
-            "configuration/security",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
             "/swagger-ui/**",
             "/webjars/**",
             "/swagger-ui.html"
     };
 
+    private static final String[] ADMIN_URLS = {
+            "/api/admin/**"
+    };
+
+    private static final String[] API_URLS = {
+            "/api/users/**",
+            "/api/profiles/**",
+            "/api/projects/**",
+            "/api/tasks/**"
+    };
+
     @Bean
-    public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers((PUBLIC_URLS))
-                                .permitAll()
-                                .anyRequest()
-                                .permitAll()
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(PUBLIC_URLS).permitAll()
+                        .requestMatchers(ADMIN_URLS).hasRole("admin")
+                        .requestMatchers(API_URLS).authenticated()
+                        .anyRequest().denyAll()
                 )
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(this.jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(apiFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 }

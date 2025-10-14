@@ -1,6 +1,5 @@
-package com.geoffrey.mini_trello_back.security.filters;
+package com.geoffrey.mini_trello_back.security;
 
-import com.geoffrey.mini_trello_back.security.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,12 +16,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
-public class JwtFilter extends OncePerRequestFilter {
+public class ApiFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
-    public JwtFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+    public ApiFilter(JwtService jwtService, UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
     }
@@ -33,29 +32,23 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        if (request.getRequestURI().contains("/auth/")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (header == null || !header.startsWith("Bearer ")) {
+        if (header == null) {
             filterChain.doFilter(request, response);
-            return;
         }
 
         String token = header.replace("Bearer ", "");
         String username = jwtService.extractUsername(token);
 
-        if (username != null || SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if (jwtService.isTokenValid(token, userDetails.getUsername())) {
                 final UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                filterChain.doFilter(request, response);
             }
         }
         filterChain.doFilter(request, response);
-
-
     }
 }
