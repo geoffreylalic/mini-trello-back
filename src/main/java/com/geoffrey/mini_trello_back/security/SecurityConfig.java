@@ -22,9 +22,9 @@ public class SecurityConfig {
     }
 
     public static final String[] PUBLIC_URLS = {
-            "/register",
-            "/login",
-            "/refresh",
+            "/auth/register",
+            "/auth/login",
+            "/auth/refresh",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
@@ -38,7 +38,6 @@ public class SecurityConfig {
     };
 
     @Bean
-
     public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)

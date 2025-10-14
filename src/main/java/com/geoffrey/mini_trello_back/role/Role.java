@@ -26,6 +26,8 @@ public class Role extends BaseEntity {
         this.name = name;
     }
 
+    public Role() {
+    }
 
     public Integer getId() {
         return id;
