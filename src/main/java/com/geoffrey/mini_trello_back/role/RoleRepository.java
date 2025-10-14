@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface RoleRepository extends JpaRepository<Role, Integer> {
 
     @Query("""
-            SELECT 1 
+            SELECT COUNT(r) > 0 
             FROM Role r
             WHERE LOWER(r.name) = LOWER(:name)
             """)

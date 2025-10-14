@@ -36,16 +36,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto createUser(CreateUserDto userDto) {
-        String role = userDto.role();
-        boolean roleExits = roleRepository.existsByName(role);
-        if (!roleExits) {
-            throw new RoleNameNotFound(role);
-        }
+        String roleName = userDto.role();
+        Role role = roleRepository.findByName(roleName).orElseThrow(() -> new RoleNameNotFound(roleName));
         int nbUserEmail = userRepository.countUsersByEmail(userDto.email());
         if (nbUserEmail > 0) {
             throw new UserEmailExistsException(userDto.email());
         }
-        User inputUser = userMapper.toUser(userDto);
+
+        User inputUser = userMapper.toUser(userDto, role);
+        String encodedPassword = passwordEncoder.encode(userDto.password());
+        inputUser.setPassword(encodedPassword);
         User newUser = userRepository.save(inputUser);
         return userMapper.toUserResponse(newUser);
     }

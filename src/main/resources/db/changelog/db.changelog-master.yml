@@ -9,3 +9,5 @@ databaseChangeLog:
       file: db/changelog/changelog-004-remove-profile-role.yml
   - include:
       file: db/changelog/changelog-005-insert-default-roles.yml
+  - include:
+      file: db/changelog/changelog-006-update-default-roles.yml

@@ -80,7 +80,7 @@ public class User implements UserDetails {
         if (this.getRole() == null) {
             return List.of();
         }
-        return Collections.singleton(new SimpleGrantedAuthority(this.getRole().toString()));
+        return Collections.singleton(new SimpleGrantedAuthority(this.getRole().getName()));
     }
 
     @Override

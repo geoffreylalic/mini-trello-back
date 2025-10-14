@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/roles")
+@RequestMapping("/api/roles/")
 public class RoleController {
     private final RoleServiceImpl roleService;
 
@@ -16,29 +16,28 @@ public class RoleController {
         this.roleService = roleService;
     }
 
-    @PostMapping()
-    RoleResponseDto createRole(@Valid RoleDto roleDto) {
+    @PostMapping("")
+    RoleResponseDto createRole(@Valid @RequestBody RoleDto roleDto) {
         return roleService.createRole(roleDto);
     }
 
-    @GetMapping()
+    @GetMapping("")
     List<RoleResponseDto> listRoles() {
         return roleService.listRoles();
-
     }
 
-    @GetMapping("/{roleId}")
-    RoleResponseDto getRole(@PathVariable Integer roleId) {
+    @GetMapping("{roleId}")
+    RoleResponseDto getRole(@PathVariable("roleId") Integer roleId) {
         return roleService.getRole(roleId);
     }
 
-    @PatchMapping("/{roleId}")
-    RoleResponseDto updateRole(RoleDto roleDto, @PathVariable Integer roleId) {
+    @PatchMapping("{roleId}")
+    RoleResponseDto updateRole(@Valid @RequestBody RoleDto roleDto, @PathVariable("roleId") Integer roleId) {
         return roleService.updateRole(roleDto, roleId);
     }
 
-    @DeleteMapping("/{roleId}")
-    void deleteRole(@PathVariable Integer roleId) {
+    @DeleteMapping("{roleId}")
+    void deleteRole(@PathVariable("roleId") Integer roleId) {
         roleService.deleteRole(roleId);
     }
 }

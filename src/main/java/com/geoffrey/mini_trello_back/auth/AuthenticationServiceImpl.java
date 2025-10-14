@@ -67,7 +67,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         checkPasswords(registerDto.password(), registerDto.confirmPassword());
         User inputUser = userMapper.toUser(registerDto);
 
-        String roleName = "user";
+        String roleName = "ROLE_USER";
         Role role = roleRepository.findByName(roleName).orElseThrow(() -> new RoleNameNotFound(roleName));
         inputUser.setRole(role);
 

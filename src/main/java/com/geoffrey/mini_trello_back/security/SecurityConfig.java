@@ -41,7 +41,9 @@ public class SecurityConfig {
             "/api/users/**",
             "/api/profiles/**",
             "/api/projects/**",
-            "/api/tasks/**"
+            "/api/tasks/**",
+            "/api/roles/**"
+
     };
 
     @Bean
@@ -52,7 +54,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_URLS).permitAll()
-                        .requestMatchers(ADMIN_URLS).hasRole("admin")
+                        .requestMatchers(ADMIN_URLS).hasRole("ADMIN")
                         .requestMatchers(API_URLS).authenticated()
                         .anyRequest().denyAll()
                 )
