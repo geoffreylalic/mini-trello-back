@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users/")
 public class UserController {
 
     private final UserService userService;
@@ -30,28 +30,28 @@ public class UserController {
 
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     public UserResponseDto getUserById(@PathVariable("id") int userId) {
 
         return userService.getUserById(userId);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("{id}")
     public UserResponseDto patchUserById(@PathVariable("id") int userId, @Valid @RequestBody UpdateUserDto userDto) {
         return userService.patchUserById(userId, userDto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("{id}")
     public void deleteUserById(@PathVariable("id") int userId) {
         userService.deleteUserById(userId);
     }
 
-    @PatchMapping("/{id}/role")
+    @PatchMapping("{id}/role")
     public UserResponseDto updateUserRole(@PathVariable("id") int userId, @Valid @RequestBody UserRoleDto userRoleDto) {
         return userService.updateUserRole(userId, userRoleDto);
     }
 
-    @PatchMapping("/{id}/password")
+    @PatchMapping("{id}/password")
     public UserResponseDto changePassword(@PathVariable("id") int userId, ChangePasswordDto newPasswordDto) {
         return userService.changePassword(userId, newPasswordDto);
     }

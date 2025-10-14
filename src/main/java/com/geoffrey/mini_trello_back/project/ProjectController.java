@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("api/projects/")
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -23,42 +24,42 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
-    @PostMapping("projects")
+    @PostMapping("")
     public ProjectResponseDto createProject(@Valid @RequestBody CreateProjectDto projectDto) {
         return projectService.createProject(projectDto);
     }
 
-    @GetMapping("projects")
+    @GetMapping("")
     public ResponsePaginatedDto<List<ProjectResponseDto>> getProjects(@PageableDefault Pageable pageable) {
         return projectService.listProjects(pageable);
     }
 
-    @GetMapping("projects/{projectId}")
+    @GetMapping("{projectId}")
     public ProjectResponseDto getProject(@PathVariable("projectId") Integer projectId) {
         return projectService.getProject(projectId);
     }
 
-    @PatchMapping("projects/{projectId}")
+    @PatchMapping("{projectId}")
     public ProjectResponseDto patchProject(@PathVariable("projectId") Integer projectId, @Valid @RequestBody PatchProjectDto projectDto) {
         return projectService.patchProject(projectId, projectDto);
     }
 
-    @PatchMapping("projects/{projectId}/owner")
+    @PatchMapping("{projectId}/owner")
     public ProjectResponseDto patchOwnerProject(@PathVariable("projectId") Integer projectId, @Valid @RequestBody PatchProjectOwnerDto projectDto) {
         return projectService.patchProjectOwner(projectId, projectDto);
     }
 
-    @DeleteMapping("projects/{projectId}")
+    @DeleteMapping("{projectId}")
     public void patchProject(@PathVariable("projectId") Integer projectId) {
         projectService.deleteProject(projectId);
     }
 
-    @GetMapping("projects/{projectId}/tasks")
+    @GetMapping("{projectId}/tasks")
     public ResponsePaginatedDto<List<SimpleTaskResponseDto>> getProjectTasks(@PathVariable Integer projectId, @PageableDefault Pageable pageable) {
         return projectService.listProjectTasks(projectId, pageable);
     }
 
-    @GetMapping("projects/{projectId}/members")
+    @GetMapping("{projectId}/members")
     public ResponsePaginatedDto<List<SimpleProfileResponseDto>> getProjectMembers(@PathVariable Integer projectId, @PageableDefault Pageable pageable) {
         return projectService.listProjectMembers(projectId, pageable);
     }

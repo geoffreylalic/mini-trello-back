@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("api/profiles/")
 public class ProfileController {
     ProfileService profileService;
 
@@ -21,32 +22,32 @@ public class ProfileController {
         this.profileService = profileService;
     }
 
-    @PostMapping("profiles")
+    @PostMapping("")
     public ProfileResponseDto createProfile(@Valid @RequestBody CreateProfileDto profileDto) {
         return profileService.createProfile(profileDto);
     }
 
-    @GetMapping("profiles")
+    @GetMapping("")
     public ResponsePaginatedDto<List<ProfileResponseDto>> listProfiles(@PageableDefault Pageable pageable) {
         return profileService.listProfiles(pageable);
     }
 
-    @GetMapping("profiles/{profile_id}")
+    @GetMapping("{profile_id}")
     public ProfileResponseDto getProfile(@PathVariable("profile_id") int profileId) {
         return profileService.getProfile(profileId);
     }
 
-    @PatchMapping("profiles/{profile_id}")
+    @PatchMapping("{profile_id}")
     public ProfileResponseDto patchProfile(@Valid @RequestBody PatchProfileDto profileDto, @PathVariable("profile_id") int profileId) {
         return profileService.patchProfile(profileDto, profileId);
     }
 
-    @GetMapping("profiles/{profile_id}/projects")
+    @GetMapping("{profile_id}/projects")
     public ResponsePaginatedDto<List<SimpleProjectDto>> getProjectsProfile(@PathVariable("profile_id") int profileId, @PageableDefault Pageable pageable) {
         return profileService.getProjectsProfile(profileId, pageable);
     }
 
-    @GetMapping("profiles/{profile_id}/tasks")
+    @GetMapping("{profile_id}/tasks")
     public ResponsePaginatedDto<List<ProfileTasksDto>> getTasksProfiles(@PathVariable("profile_id") int profileId, @PageableDefault Pageable pageable) {
         return profileService.getTasksProfiles(profileId, pageable);
     }
