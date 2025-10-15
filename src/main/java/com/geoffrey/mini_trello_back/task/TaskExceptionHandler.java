@@ -1,6 +1,7 @@
 package com.geoffrey.mini_trello_back.task;
 
 import com.geoffrey.mini_trello_back.common.ApiError;
+import com.geoffrey.mini_trello_back.task.exceptions.ProfileNotRelatedToProjectException;
 import com.geoffrey.mini_trello_back.task.exceptions.TaskNotFoundException;
 import com.geoffrey.mini_trello_back.task.exceptions.TaskStatusMismatchException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,4 +33,16 @@ public class TaskExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(ProfileNotRelatedToProjectException.class)
+    public ResponseEntity<ApiError> handleCannotCreateTaskError(ProfileNotRelatedToProjectException ex, HttpServletRequest request) {
+        ApiError error = new ApiError(
+                HttpStatus.FORBIDDEN.value(),
+                "Unable to create task.",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
 }

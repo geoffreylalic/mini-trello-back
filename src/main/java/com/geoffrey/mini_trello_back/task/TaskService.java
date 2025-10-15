@@ -1,5 +1,6 @@
 package com.geoffrey.mini_trello_back.task;
 
+import com.geoffrey.mini_trello_back.auth.AuthUtils;
 import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
 import com.geoffrey.mini_trello_back.common.ResponsePaginatedMapper;
 import com.geoffrey.mini_trello_back.profile.Profile;
@@ -9,8 +10,10 @@ import com.geoffrey.mini_trello_back.project.Project;
 import com.geoffrey.mini_trello_back.project.ProjectRepository;
 import com.geoffrey.mini_trello_back.project.exceptions.ProjectNotFoundException;
 import com.geoffrey.mini_trello_back.task.dto.*;
+import com.geoffrey.mini_trello_back.task.exceptions.ProfileNotRelatedToProjectException;
 import com.geoffrey.mini_trello_back.task.exceptions.TaskNotFoundException;
 import com.geoffrey.mini_trello_back.task.exceptions.TaskStatusMismatchException;
+import com.geoffrey.mini_trello_back.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,19 +41,20 @@ public class TaskService {
         this.responsePaginatedMapper = responsePaginatedMapper;
     }
 
-    public ResponsePaginatedDto<List<TaskResponseDto>> getTasks(Pageable pageable) {
-        Page<TaskResponseDto> page = taskRepository.findAll(pageable).map(taskMapper::toTaskResponseDto);
+    public ResponsePaginatedDto<List<TaskResponseDto>> getTasks(Pageable pageable, User currentUser) {
+        Profile profile = AuthUtils.getProfileFromUser(currentUser);
+
+        Page<TaskResponseDto> page = taskRepository.findTasksByProfileId(profile.getId(), pageable).map(taskMapper::toTaskResponseDto);
         return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
 
-    public TaskResponseDto createTask(CreateTaskDto taskDto) {
-        Integer profileId = taskDto.profileId();
+    public TaskResponseDto createTask(CreateTaskDto taskDto, User currentUser) {
         Integer projectId = taskDto.projectId();
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
+        Profile profile = AuthUtils.getProfileFromUser(currentUser);
 
-        Profile profile = null;
-        if (profileId != null) {
-            profile = profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
+        if (project.getOwner() != profile) {
+            throw new ProfileNotRelatedToProjectException();
         }
 
         Task task = taskMapper.toTask(taskDto, profile, project);
@@ -58,13 +62,24 @@ public class TaskService {
         return taskMapper.toTaskResponseDto(newTask);
     }
 
-    public TaskResponseDto getTask(Integer taskId) {
+    public TaskResponseDto getTask(Integer taskId, User currentUser) {
+        Profile profile = AuthUtils.getProfileFromUser(currentUser);
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException(taskId));
+
+        checkProfileRelatedToProject(task, profile);
         return taskMapper.toTaskResponseDto(task);
     }
 
-    public TaskResponseDto patchTask(Integer taskId, UpdateTaskDto taskDto) {
+    private void checkProfileRelatedToProject(Task task, Profile profile) {
+        if (task.getAssignedTo() != profile || task.getProject().getOwner() != profile) {
+            throw new ProfileNotRelatedToProjectException();
+        }
+    }
+
+    public TaskResponseDto patchTask(Integer taskId, UpdateTaskDto taskDto, User currentUser) {
+        Profile profile = AuthUtils.getProfileFromUser(currentUser);
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException(taskId));
+        checkProfileRelatedToProject(task, profile);
 
         taskMapper.mergeTask(task, taskDto);
         Task updateTask = taskRepository.save(task);
@@ -72,8 +87,12 @@ public class TaskService {
         return taskMapper.toTaskResponseDto(updateTask);
     }
 
-    public TaskResponseDto patchStatusTask(Integer taskId, UpdateStatusTaskDto taskDto) {
+    public TaskResponseDto patchStatusTask(Integer taskId, UpdateStatusTaskDto taskDto, User currentUser) {
+        Profile profile = AuthUtils.getProfileFromUser(currentUser);
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException(taskId));
+
+        checkProfileRelatedToProject(task, profile);
+
         boolean anyMatch = Arrays.stream(Status.values()).anyMatch(status -> status.name().equals(taskDto.status()));
         if (!anyMatch) {
             throw new TaskStatusMismatchException(taskDto.status());
@@ -83,18 +102,29 @@ public class TaskService {
         return taskMapper.toTaskResponseDto(updatedTask);
     }
 
-    public TaskResponseDto patchAssignedTask(Integer taskId, UpdateAssignedTaskDto taskDto) {
+    public TaskResponseDto patchAssignedTask(Integer taskId, UpdateAssignedTaskDto taskDto, User currentUser) {
+        Profile profile = AuthUtils.getProfileFromUser(currentUser);
         Integer profileId = taskDto.profileId();
-        Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
+        Profile assignedProfile = profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException(taskId));
 
-        task.setAssignedTo(profile);
+        checkIsOwnerProject(profile, task);
+
+
+        task.setAssignedTo(assignedProfile);
         return taskMapper.toTaskResponseDto(task);
     }
 
+    private void checkIsOwnerProject(Profile profile, Task task) {
+        if (task.getProject().getOwner() != profile) {
+            throw new ProfileNotRelatedToProjectException();
+        }
+    }
 
-    public void deleteTask(Integer taskId) {
+    public void deleteTask(Integer taskId, User currentUser) {
+        Profile profile = AuthUtils.getProfileFromUser(currentUser);
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException(taskId));
+        checkIsOwnerProject(profile, task);
         taskRepository.delete(task);
     }
 

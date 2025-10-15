@@ -1,12 +1,12 @@
 package com.geoffrey.mini_trello_back.task.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 public record CreateTaskDto(
-        @NotNull String title,
+        @NotBlank String title,
         String description,
         String status,
-        Integer profileId,
-        @NotNull Integer projectId
+        @NotBlank Integer profileId,
+        @NotBlank Integer projectId
 ) {
 }

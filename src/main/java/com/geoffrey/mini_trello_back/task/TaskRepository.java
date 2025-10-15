@@ -11,6 +11,8 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
 
     Page<Task> findTasksByProjectId(Integer projectId, Pageable pageable);
 
+    Page<Task> findTasksByProfileId(Integer profileId, Pageable pageable);
+
     List<Task> findTasksByAssignedToId(Integer projectId);
 
     Page<Task> findTasksByAssignedToId(Integer projectId, Pageable pageable);
