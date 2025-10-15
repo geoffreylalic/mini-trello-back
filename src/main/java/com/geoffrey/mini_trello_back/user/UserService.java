@@ -14,13 +14,14 @@ public interface UserService extends UserDetailsService {
 
     ResponsePaginatedDto<List<UserResponseDto>> listUsers(Pageable pageable);
 
-    UserResponseDto getUserById(int userId);
+    UserResponseDto getUserById(int userId, User AuthUser);
 
-    UserResponseDto patchUserById(int userId, UpdateUserDto userDto);
+    UserResponseDto patchUserById(int userId, UpdateUserDto userDto, User AuthUser);
 
-    void deleteUserById(int userId);
+    void deleteUserById(int userId, User AuthUser);
 
-    UserResponseDto updateUserRole(int userId, UserRoleDto userRoleDto);
+    UserResponseDto updateUserRole(int userId, UserRoleDto userRoleDto, User AuthUser);
 
-    UserResponseDto changePassword(int userId, ChangePasswordDto newPassword);
+    UserResponseDto changePassword(int userId, ChangePasswordDto newPassword, User AuthUser);
+
 }

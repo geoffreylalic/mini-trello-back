@@ -1,5 +1,6 @@
 package com.geoffrey.mini_trello_back.user;
 
+import com.geoffrey.mini_trello_back.auth.exceptions.AccessDeniedException;
 import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
 import com.geoffrey.mini_trello_back.common.ResponsePaginatedMapper;
 import com.geoffrey.mini_trello_back.role.Role;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -57,38 +59,48 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto getUserById(int userId) {
-        return userRepository.findUserById(userId)
-                .map(userMapper::toUserResponse)
+    public UserResponseDto getUserById(int userId, User authUser) {
+
+        User user = userRepository.findUserById(userId)
                 .orElseThrow(() -> new UserDoesNotExistsException(userId));
+
+        checkAccessResource(user, authUser);
+
+        return userMapper.toUserResponse(user);
     }
 
+
     @Override
-    public UserResponseDto patchUserById(int userId, UpdateUserDto userDto) {
+    public UserResponseDto patchUserById(int userId, UpdateUserDto userDto, User authUser) {
         User user = userRepository.findUserById(userId).orElseThrow(() -> new UserDoesNotExistsException(userId));
+        checkAccessResource(user, authUser);
         user.setEmail(userDto.email());
         userRepository.save(user);
         return userMapper.toUserResponse(user);
     }
 
     @Override
-    public void deleteUserById(int userId) {
+    public void deleteUserById(int userId, User authUser) {
         User user = userRepository.findUserById(userId).orElseThrow(() -> new UserDoesNotExistsException(userId));
+        checkAccessResource(user, authUser);
         userRepository.delete(user);
     }
 
     @Override
-    public UserResponseDto updateUserRole(int userId, UserRoleDto userRoleDto) {
+    public UserResponseDto updateUserRole(int userId, UserRoleDto userRoleDto, User authUser) {
         String roleName = userRoleDto.role();
         User user = userRepository.findUserById(userId).orElseThrow(() -> new UserDoesNotExistsException(userId));
+        checkAccessResource(user, authUser);
         Role role = roleRepository.findByName(roleName).orElseThrow(() -> new RoleNameNotFound(roleName));
         user.setRole(role);
+        userRepository.save(user);
         return userMapper.toUserResponse(user);
     }
 
     @Override
-    public UserResponseDto changePassword(int userId, ChangePasswordDto passwordDto) {
+    public UserResponseDto changePassword(int userId, ChangePasswordDto passwordDto, User authUser) {
         User user = userRepository.findUserById(userId).orElseThrow(() -> new UserDoesNotExistsException(userId));
+        checkAccessResource(user, authUser);
         boolean matches = passwordEncoder.matches(passwordEncoder.encode(passwordDto.newPassword()), user.getPassword());
         if (matches) {
             throw new UserPasswordInvalid();
@@ -104,5 +116,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findUserByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found."));
+    }
+
+    private void checkAccessResource(User user, User currentUser) {
+        if (!Objects.equals(user.getId(), currentUser.getId())) {
+            throw new AccessDeniedException();
+        }
     }
 }

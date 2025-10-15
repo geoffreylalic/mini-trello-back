@@ -1,5 +1,6 @@
 package com.geoffrey.mini_trello_back.auth;
 
+import com.geoffrey.mini_trello_back.auth.exceptions.AccessDeniedException;
 import com.geoffrey.mini_trello_back.auth.exceptions.PasswordsMissmatchException;
 import com.geoffrey.mini_trello_back.common.ApiError;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +16,13 @@ public class AuthExceptionHandler {
                                                                   HttpServletRequest request) {
         ApiError error = new ApiError(HttpStatus.BAD_REQUEST.value(), "Passwords missmatch.", ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccessDeniedError(AccessDeniedException ex,
+                                                            HttpServletRequest request) {
+        ApiError error = new ApiError(HttpStatus.FORBIDDEN.value(), "Access denied", ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 }
 
