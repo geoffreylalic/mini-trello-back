@@ -4,4 +4,8 @@ public class ProfileNotFoundException extends RuntimeException {
     public ProfileNotFoundException(Integer profileId) {
         super("The profile: " + String.valueOf(profileId) + " does not exists.");
     }
+
+    public ProfileNotFoundException() {
+        super("Profile does not exists.");
+    }
 }
