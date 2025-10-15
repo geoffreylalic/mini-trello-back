@@ -1,5 +1,6 @@
 package com.geoffrey.mini_trello_back.profile;
 
+import com.geoffrey.mini_trello_back.auth.AuthUtils;
 import com.geoffrey.mini_trello_back.auth.exceptions.AccessDeniedException;
 import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
 import com.geoffrey.mini_trello_back.common.ResponsePaginatedMapper;
@@ -48,7 +49,7 @@ public class ProfileService {
         Integer userId = profileDto.userId();
         User userRequested = userRepository.findUserById(userId)
                 .orElseThrow(() -> new UserDoesNotExistsException(userId));
-        checkAccessResource(userRequested, currentUser);
+        AuthUtils.checkAccessResource(userRequested, currentUser);
         long nbProfiles = profileRepository.countByUser_Id(userId);
         if (nbProfiles > 0) {
             throw new ProfileUserAlreadyExistsException(userId);
@@ -67,13 +68,13 @@ public class ProfileService {
     public ProfileResponseDto getProfile(int profileId, User currentUser) {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(profileId));
-        checkAccessResource(profile.getUser(), currentUser);
+        AuthUtils.checkAccessResource(profile.getUser(), currentUser);
         return profileMapper.toProfileResponseDto(profile);
     }
 
     public ProfileResponseDto patchProfile(PatchProfileDto profileDto, int profileId, User currentUser) {
         Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
-        checkAccessResource(profile.getUser(), currentUser);
+        AuthUtils.checkAccessResource(profile.getUser(), currentUser);
         profile.setDateOfBirth(profileDto.dateOfBirth());
         Profile newProfile = profileRepository.save(profile);
         return profileMapper.toProfileResponseDto(newProfile);
@@ -81,7 +82,7 @@ public class ProfileService {
 
     public ResponsePaginatedDto<List<SimpleProjectDto>> getProjectsProfile(Integer profileId, Pageable pageable, User currentUser) {
         Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
-        checkAccessResource(profile.getUser(), currentUser);
+        AuthUtils.checkAccessResource(profile.getUser(), currentUser);
 
         Page<SimpleProjectDto> page = profileRepository.findRelatedProjects(profileId, pageable).map(projectMapper::toSimpleProjectDto);
         return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
@@ -89,14 +90,8 @@ public class ProfileService {
 
     public ResponsePaginatedDto<List<ProfileTasksDto>> getTasksProfiles(int profileId, Pageable pageable, User currentUser) {
         Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
-        checkAccessResource(profile.getUser(), currentUser);
+        AuthUtils.checkAccessResource(profile.getUser(), currentUser);
         Page<ProfileTasksDto> page = taskRepository.findTasksByAssignedToId(profileId, pageable).map(taskMapper::toProfileTasksDto);
         return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
-    }
-
-    private void checkAccessResource(User user, User currentUser) {
-        if (!Objects.equals(user.getId(), currentUser.getId())) {
-            throw new AccessDeniedException();
-        }
     }
 }
