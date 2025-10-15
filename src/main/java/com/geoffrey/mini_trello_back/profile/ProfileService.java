@@ -1,5 +1,6 @@
 package com.geoffrey.mini_trello_back.profile;
 
+import com.geoffrey.mini_trello_back.auth.exceptions.AccessDeniedException;
 import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
 import com.geoffrey.mini_trello_back.common.ResponsePaginatedMapper;
 import com.geoffrey.mini_trello_back.profile.dto.CreateProfileDto;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProfileService {
@@ -42,10 +44,11 @@ public class ProfileService {
         this.responsePaginatedMapper = responsePaginatedMapper;
     }
 
-    public ProfileResponseDto createProfile(CreateProfileDto profileDto) {
+    public ProfileResponseDto createProfile(CreateProfileDto profileDto, User currentUser) {
         Integer userId = profileDto.userId();
         User userRequested = userRepository.findUserById(userId)
                 .orElseThrow(() -> new UserDoesNotExistsException(userId));
+        checkAccessResource(userRequested, currentUser);
         long nbProfiles = profileRepository.countByUser_Id(userId);
         if (nbProfiles > 0) {
             throw new ProfileUserAlreadyExistsException(userId);
@@ -61,35 +64,39 @@ public class ProfileService {
         return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
 
-    public ProfileResponseDto getProfile(int profileId) {
-        return profileRepository.findById(profileId)
-                .map(profileMapper::toProfileResponseDto)
+    public ProfileResponseDto getProfile(int profileId, User currentUser) {
+        Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException(profileId));
+        checkAccessResource(profile.getUser(), currentUser);
+        return profileMapper.toProfileResponseDto(profile);
     }
 
-    public ProfileResponseDto patchProfile(PatchProfileDto profileDto, int profileId) {
+    public ProfileResponseDto patchProfile(PatchProfileDto profileDto, int profileId, User currentUser) {
         Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
+        checkAccessResource(profile.getUser(), currentUser);
         profile.setDateOfBirth(profileDto.dateOfBirth());
         Profile newProfile = profileRepository.save(profile);
         return profileMapper.toProfileResponseDto(newProfile);
     }
 
-    public ResponsePaginatedDto<List<SimpleProjectDto>> getProjectsProfile(Integer profileId, Pageable pageable) {
-        boolean exists = profileRepository.existsById(profileId);
-        if (!exists) {
-            throw new ProfileNotFoundException(profileId);
-        }
+    public ResponsePaginatedDto<List<SimpleProjectDto>> getProjectsProfile(Integer profileId, Pageable pageable, User currentUser) {
+        Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
+        checkAccessResource(profile.getUser(), currentUser);
 
         Page<SimpleProjectDto> page = profileRepository.findRelatedProjects(profileId, pageable).map(projectMapper::toSimpleProjectDto);
         return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
 
-    public ResponsePaginatedDto<List<ProfileTasksDto>> getTasksProfiles(int profileId, Pageable pageable) {
-        boolean exists = profileRepository.existsById(profileId);
-        if (!exists) {
-            throw new ProfileNotFoundException(profileId);
-        }
+    public ResponsePaginatedDto<List<ProfileTasksDto>> getTasksProfiles(int profileId, Pageable pageable, User currentUser) {
+        Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
+        checkAccessResource(profile.getUser(), currentUser);
         Page<ProfileTasksDto> page = taskRepository.findTasksByAssignedToId(profileId, pageable).map(taskMapper::toProfileTasksDto);
         return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
+    }
+
+    private void checkAccessResource(User user, User currentUser) {
+        if (!Objects.equals(user.getId(), currentUser.getId())) {
+            throw new AccessDeniedException();
+        }
     }
 }
