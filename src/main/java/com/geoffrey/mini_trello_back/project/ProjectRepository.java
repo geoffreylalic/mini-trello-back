@@ -12,16 +12,16 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
     @Query("""
             SELECT DISTINCT t.project.id
-            FROM task t
-            WHERE t.assignedTo = :profileId
+            FROM Task t
+            WHERE t.assignedTo.id = :profileId
             """)
     List<Integer> findProjectIdsByProfileId(Integer profileId);
 
 
     @Query("""
             SELECT DISTINCT t.project.id
-            FROM task t
-            WHERE task IN :tasksIds
+            FROM Task t
+            WHERE t.id IN :tasksIds
             """)
     List<Integer> findProjectIdsByTaskIds(List<Integer> taskIds);
 
@@ -29,7 +29,7 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
             SELECT DISTINCT p
             FROM Project p
             WHERE p.id IN :projectIds OR p.owner.id = :profileId
-            ORDER p.id ASC
+            ORDER BY p.id ASC
             """)
     Page<Project> findProjectsRelatedByProfileId(List<Integer> projectIds, Integer profileId, Pageable pageable);
 }
