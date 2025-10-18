@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Integer> {
@@ -39,4 +40,6 @@ public interface ProfileRepository extends JpaRepository<Profile, Integer> {
             "LEFT JOIN t.project proj " +
             "WHERE proj.id = :projectId AND prof IS NOT NULL")
     Page<Profile> findProfilesByRelatedProject(Integer projectId, Pageable pageable);
+
+    Optional<Profile> findByUserId(Integer id);
 }

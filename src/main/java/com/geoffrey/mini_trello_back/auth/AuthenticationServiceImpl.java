@@ -1,10 +1,9 @@
 package com.geoffrey.mini_trello_back.auth;
 
-import com.geoffrey.mini_trello_back.auth.dto.AuthResponseDto;
-import com.geoffrey.mini_trello_back.auth.dto.LoginDto;
-import com.geoffrey.mini_trello_back.auth.dto.RefreshTokenDto;
-import com.geoffrey.mini_trello_back.auth.dto.RegisterDto;
+import com.geoffrey.mini_trello_back.auth.dto.*;
 import com.geoffrey.mini_trello_back.auth.exceptions.PasswordsMissmatchException;
+import com.geoffrey.mini_trello_back.profile.Profile;
+import com.geoffrey.mini_trello_back.profile.ProfileRepository;
 import com.geoffrey.mini_trello_back.role.Role;
 import com.geoffrey.mini_trello_back.role.RoleRepository;
 import com.geoffrey.mini_trello_back.role.exceptions.RoleNameNotFound;
@@ -32,8 +31,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final RoleRepository roleRepository;
     private final AuthMapper authMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ProfileRepository profileRepository;
 
-    public AuthenticationServiceImpl(UserRepository userRepository, UserMapper userMapper, JwtService jwtService, AuthenticationManager authenticationManager, RoleRepository roleRepository, AuthMapper authMapper, PasswordEncoder passwordEncoder) {
+    public AuthenticationServiceImpl(UserRepository userRepository, UserMapper userMapper, JwtService jwtService, AuthenticationManager authenticationManager, RoleRepository roleRepository, AuthMapper authMapper, PasswordEncoder passwordEncoder, ProfileRepository profileRepository) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.jwtService = jwtService;
@@ -41,6 +41,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.roleRepository = roleRepository;
         this.authMapper = authMapper;
         this.passwordEncoder = passwordEncoder;
+        this.profileRepository = profileRepository;
     }
 
     @Override
@@ -92,6 +93,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String newRefreshToken = jwtService.generateRefreshToken(username);
         User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return authMapper.toAuthResponseDto(user, accessToken, newRefreshToken);
+    }
+
+    @Override
+    public MeResponseDto getMe(User currentUser) {
+        Profile profile = profileRepository.findByUserId(currentUser.getId()).orElse(null);
+        return authMapper.toMeResponseDto(currentUser, profile);
     }
 
     private void checkPasswords(String password, String confirmPassword) {

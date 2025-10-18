@@ -1,9 +1,7 @@
 package com.geoffrey.mini_trello_back.auth;
 
-import com.geoffrey.mini_trello_back.auth.dto.AuthResponseDto;
-import com.geoffrey.mini_trello_back.auth.dto.LoginDto;
-import com.geoffrey.mini_trello_back.auth.dto.RefreshTokenDto;
-import com.geoffrey.mini_trello_back.auth.dto.RegisterDto;
+import com.geoffrey.mini_trello_back.auth.dto.*;
+import com.geoffrey.mini_trello_back.user.User;
 import com.geoffrey.mini_trello_back.user.dto.UserResponseDto;
 
 public interface AuthenticationService {
@@ -14,4 +12,6 @@ public interface AuthenticationService {
     void logout();
 
     AuthResponseDto refresh(RefreshTokenDto refreshTokenDto);
+
+    MeResponseDto getMe(User currentUser);
 }

@@ -1,15 +1,11 @@
 package com.geoffrey.mini_trello_back.auth;
 
-import com.geoffrey.mini_trello_back.auth.dto.AuthResponseDto;
-import com.geoffrey.mini_trello_back.auth.dto.LoginDto;
-import com.geoffrey.mini_trello_back.auth.dto.RefreshTokenDto;
-import com.geoffrey.mini_trello_back.auth.dto.RegisterDto;
+import com.geoffrey.mini_trello_back.auth.dto.*;
+import com.geoffrey.mini_trello_back.user.User;
 import com.geoffrey.mini_trello_back.user.dto.UserResponseDto;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -34,5 +30,10 @@ public class AuthController {
     @PostMapping("/refresh-token")
     public AuthResponseDto refresh(@RequestBody @Valid RefreshTokenDto refreshTokenDto) {
         return authenticationService.refresh(refreshTokenDto);
+    }
+
+    @GetMapping("/me")
+    public MeResponseDto refresh(@AuthenticationPrincipal User currentUser) {
+        return authenticationService.getMe(currentUser);
     }
 }
