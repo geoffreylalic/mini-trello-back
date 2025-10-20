@@ -6,8 +6,6 @@ import jakarta.validation.constraints.Past;
 import java.time.LocalDate;
 
 public record CreateProfileDto(
-        @NotNull
-        Integer userId,
         @Past @NotNull
         LocalDate dateOfBirth) {
 }

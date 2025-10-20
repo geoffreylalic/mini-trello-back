@@ -47,9 +47,15 @@ public class ProfileMapper {
         Integer id = profile.getId();
         UserResponseDto userResponseDto = userMapper.toUserResponse(profile.getUser());
         LocalDate dateOfBirth = profile.getDateOfBirth();
-        List<SimpleProjectDto> projects = profile.getProjects().stream().map(projectMapper::toSimpleProjectDto).toList();
-        List<Task> tasks = profile.getTasks();
+        List<SimpleProjectDto> projects = null;
+        List<Task> tasks = null;
 
+        if (!profile.getProjects().isEmpty()) {
+            projects = profile.getProjects().stream().map(projectMapper::toSimpleProjectDto).toList();
+        }
+        if (!profile.getTasks().isEmpty()) {
+            tasks = profile.getTasks();
+        }
         return new ProfileResponseDto(
                 id,
                 userResponseDto,

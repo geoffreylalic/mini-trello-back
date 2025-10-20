@@ -46,7 +46,7 @@ public class ProfileService {
     }
 
     public ProfileResponseDto createProfile(CreateProfileDto profileDto, User currentUser) {
-        Integer userId = profileDto.userId();
+        Integer userId = currentUser.getId();
         User userRequested = userRepository.findUserById(userId)
                 .orElseThrow(() -> new UserDoesNotExistsException(userId));
         AuthUtils.checkAccessResource(userRequested, currentUser);
