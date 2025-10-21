@@ -50,10 +50,10 @@ public class ProfileMapper {
         List<SimpleProjectDto> projects = null;
         List<Task> tasks = null;
 
-        if (!profile.getProjects().isEmpty()) {
+        if (profile.getProjects() != null && !profile.getProjects().isEmpty()) {
             projects = profile.getProjects().stream().map(projectMapper::toSimpleProjectDto).toList();
         }
-        if (!profile.getTasks().isEmpty()) {
+        if (profile.getTasks() != null && !profile.getTasks().isEmpty()) {
             tasks = profile.getTasks();
         }
         return new ProfileResponseDto(
