@@ -27,7 +27,7 @@ public class Profile {
     @JsonManagedReference
     private List<Project> projects;
 
-    @OneToMany(mappedBy = "assignedTo")
+    @OneToMany(mappedBy = "assignedTo", fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Task> tasks;
 

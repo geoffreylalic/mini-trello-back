@@ -146,10 +146,17 @@ public class ProjectService {
     }
 
     private void checkProjectRelatedToProfile(Profile profile, Project project) {
+        if (Objects.equals(project.getOwner(), profile)) {
+            return;
+        }
+
+        if (profile.getTasks().isEmpty()) {
+            throw new AccessDeniedException();
+        }
+
         List<Integer> taskIds = profile.getTasks().stream().map(Task::getId).toList();
         List<Integer> projectIds = projectRepository.findProjectIdsByTaskIds(taskIds);
-
-        if (!Objects.equals(project.getOwner(), profile) || !projectIds.contains(project.getId())) {
+        if (!projectIds.contains(project.getId())) {
             throw new AccessDeniedException();
         }
     }
