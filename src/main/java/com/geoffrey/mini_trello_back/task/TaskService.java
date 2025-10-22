@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TaskService {
@@ -53,7 +54,7 @@ public class TaskService {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
         Profile profile = AuthUtils.getProfileFromUser(currentUser);
 
-        if (project.getOwner() != profile) {
+        if (!Objects.equals(project.getOwner().getId(), profile.getId())) {
             throw new ProfileNotRelatedToProjectException();
         }
 

@@ -146,7 +146,7 @@ public class ProjectService {
     }
 
     private void checkProjectRelatedToProfile(Profile profile, Project project) {
-        if (Objects.equals(project.getOwner(), profile)) {
+        if (Objects.equals(project.getOwner().getId(), profile.getId())) {
             return;
         }
 
