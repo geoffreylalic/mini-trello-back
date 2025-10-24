@@ -36,12 +36,12 @@ public class TaskController {
     }
 
     @PatchMapping("{task_id}")
-    public TaskResponseDto patchTask(@PathVariable("task_id") Integer taskId, @Valid @RequestBody UpdateTaskDto taskDto, @AuthenticationPrincipal User currentUser) {
+    public SimpleTaskResponseDto patchTask(@PathVariable("task_id") Integer taskId, @Valid @RequestBody UpdateTaskDto taskDto, @AuthenticationPrincipal User currentUser) {
         return taskService.patchTask(taskId, taskDto, currentUser);
     }
 
     @PatchMapping("{task_id}/status")
-    public TaskResponseDto patchStatusTask(@PathVariable("task_id") Integer taskId, @Valid @RequestBody UpdateStatusTaskDto taskDto, @AuthenticationPrincipal User currentUser) {
+    public SimpleTaskResponseDto patchStatusTask(@PathVariable("task_id") Integer taskId, @Valid @RequestBody UpdateStatusTaskDto taskDto, @AuthenticationPrincipal User currentUser) {
         return taskService.patchStatusTask(taskId, taskDto, currentUser);
     }
 

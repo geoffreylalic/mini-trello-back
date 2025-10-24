@@ -8,6 +8,7 @@ import com.geoffrey.mini_trello_back.project.ProjectMapper;
 import com.geoffrey.mini_trello_back.project.dto.ProjectResponseDto;
 import com.geoffrey.mini_trello_back.project.dto.SimpleProjectDto;
 import com.geoffrey.mini_trello_back.task.dto.*;
+import com.geoffrey.mini_trello_back.task.exceptions.TaskStatusMismatchException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -75,6 +76,14 @@ public class TaskMapper {
         }
         if (taskDto.description() != null) {
             task.setDescription(taskDto.description());
+        }
+        if (taskDto.status() != null) {
+            try {
+                task.setStatus(Status.valueOf(taskDto.status()));
+            } catch (IllegalArgumentException e) {
+                throw new TaskStatusMismatchException(taskDto.status());
+            }
+
         }
     }
 }

@@ -72,12 +72,12 @@ public class TaskService {
     }
 
     private void checkProfileRelatedToProject(Task task, Profile profile) {
-        if (task.getAssignedTo() != profile || task.getProject().getOwner() != profile) {
+        if (!Objects.equals(task.getAssignedTo().getId(), profile.getId()) || !Objects.equals(task.getProject().getOwner().getId(), profile.getId())) {
             throw new ProfileNotRelatedToProjectException();
         }
     }
 
-    public TaskResponseDto patchTask(Integer taskId, UpdateTaskDto taskDto, User currentUser) {
+    public SimpleTaskResponseDto patchTask(Integer taskId, UpdateTaskDto taskDto, User currentUser) {
         Profile profile = AuthUtils.getProfileFromUser(currentUser);
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException(taskId));
         checkProfileRelatedToProject(task, profile);
@@ -85,10 +85,10 @@ public class TaskService {
         taskMapper.mergeTask(task, taskDto);
         Task updateTask = taskRepository.save(task);
 
-        return taskMapper.toTaskResponseDto(updateTask);
+        return taskMapper.toSimpleTaskResponseDto(updateTask);
     }
 
-    public TaskResponseDto patchStatusTask(Integer taskId, UpdateStatusTaskDto taskDto, User currentUser) {
+    public SimpleTaskResponseDto patchStatusTask(Integer taskId, UpdateStatusTaskDto taskDto, User currentUser) {
         Profile profile = AuthUtils.getProfileFromUser(currentUser);
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException(taskId));
 
@@ -100,7 +100,7 @@ public class TaskService {
         }
         task.setStatus(Status.valueOf(taskDto.status()));
         Task updatedTask = taskRepository.save(task);
-        return taskMapper.toTaskResponseDto(updatedTask);
+        return taskMapper.toSimpleTaskResponseDto(updatedTask);
     }
 
     public TaskResponseDto patchAssignedTask(Integer taskId, UpdateAssignedTaskDto taskDto, User currentUser) {
@@ -117,7 +117,7 @@ public class TaskService {
     }
 
     private void checkIsOwnerProject(Profile profile, Task task) {
-        if (task.getProject().getOwner() != profile) {
+        if (!Objects.equals(task.getProject().getOwner().getId(), profile.getId())) {
             throw new ProfileNotRelatedToProjectException();
         }
     }
