@@ -122,15 +122,14 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
-    public ResponsePaginatedDto<List<SimpleTaskResponseDto>> listProjectTasks(Integer projectId, Pageable pageable, User currentUser) {
+    public List<SimpleTaskResponseDto> listProjectTasks(Integer projectId, User currentUser) {
         Profile profile = AuthUtils.getProfileFromUser(currentUser);
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
         checkProjectRelatedToProfile(profile, project);
 
-        Page<SimpleTaskResponseDto> page = taskRepository
-                .findTasksByProjectId(projectId, pageable)
-                .map(taskMapper::toSimpleTaskResponseDto);
-        return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
+        return taskRepository
+                .findTasksByProjectId(projectId).stream()
+                .map(taskMapper::toSimpleTaskResponseDto).toList();
     }
 
 

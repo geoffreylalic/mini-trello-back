@@ -6,6 +6,6 @@ public record SimpleTaskResponseDto(Integer id,
                                     String title,
                                     String description,
                                     String status,
-                                    SimpleProfileResponseDto profile
+                                    SimpleProfileResponseDto assigned_to
 ) {
 }

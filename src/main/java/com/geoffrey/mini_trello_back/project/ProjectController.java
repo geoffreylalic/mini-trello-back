@@ -65,10 +65,9 @@ public class ProjectController {
     }
 
     @GetMapping("{projectId}/tasks")
-    public ResponsePaginatedDto<List<SimpleTaskResponseDto>> getProjectTasks(@PathVariable Integer projectId,
-                                                                             @PageableDefault Pageable pageable,
-                                                                             @AuthenticationPrincipal User currentUser) {
-        return projectService.listProjectTasks(projectId, pageable, currentUser);
+    public List<SimpleTaskResponseDto> getProjectTasks(@PathVariable Integer projectId,
+                                                       @AuthenticationPrincipal User currentUser) {
+        return projectService.listProjectTasks(projectId, currentUser);
     }
 
     @GetMapping("{projectId}/members")
