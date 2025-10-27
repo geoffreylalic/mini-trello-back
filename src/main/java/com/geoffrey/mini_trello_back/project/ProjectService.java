@@ -80,7 +80,7 @@ public class ProjectService {
         Profile profile = AuthUtils.getProfileFromUser(currentUser);
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
 
-        if (!Objects.equals(project.getOwner(), profile)) {
+        if (!Objects.equals(project.getOwner().getId(), profile.getId())) {
             throw new AccessDeniedException();
         }
 
@@ -115,7 +115,7 @@ public class ProjectService {
                 .findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException(projectId));
 
-        if (!Objects.equals(project.getOwner(), profile)) {
+        if (!Objects.equals(project.getOwner().getId(), profile.getId())) {
             throw new AccessDeniedException();
         }
 
