@@ -10,6 +10,13 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Integer> {
     List<Task> findTasksByProjectId(Integer projectId);
 
+    @Query("""
+            SELECT t
+            FROM Task t
+            WHERE t.project.id = :projectId and t.status = :status
+            """)
+    List<Task> findTasksByProjectIdAndStatus(Integer projectId, Status status);
+
     Page<Task> findTasksByProjectId(Integer projectId, Pageable pageable);
 
     @Query("""

@@ -14,6 +14,7 @@ import com.geoffrey.mini_trello_back.project.dto.PatchProjectDto;
 import com.geoffrey.mini_trello_back.project.dto.PatchProjectOwnerDto;
 import com.geoffrey.mini_trello_back.project.dto.ProjectResponseDto;
 import com.geoffrey.mini_trello_back.project.exceptions.ProjectNotFoundException;
+import com.geoffrey.mini_trello_back.task.Status;
 import com.geoffrey.mini_trello_back.task.Task;
 import com.geoffrey.mini_trello_back.task.TaskMapper;
 import com.geoffrey.mini_trello_back.task.TaskRepository;
@@ -122,14 +123,27 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
-    public List<SimpleTaskResponseDto> listProjectTasks(Integer projectId, User currentUser) {
+    public List<SimpleTaskResponseDto> listProjectTasks(Integer projectId, User currentUser, String filteredStatus) {
         Profile profile = AuthUtils.getProfileFromUser(currentUser);
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
         checkProjectRelatedToProfile(profile, project);
 
+        Status status = null;
+        if (filteredStatus != null && !filteredStatus.isBlank()) {
+            try {
+                status = Status.valueOf(filteredStatus);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException(e);
+            }
+            return taskRepository
+                    .findTasksByProjectIdAndStatus(projectId, status).stream()
+                    .map(taskMapper::toSimpleTaskResponseDto).toList();
+        }
+
         return taskRepository
                 .findTasksByProjectId(projectId).stream()
                 .map(taskMapper::toSimpleTaskResponseDto).toList();
+
     }
 
 

@@ -66,8 +66,9 @@ public class ProjectController {
 
     @GetMapping("{projectId}/tasks")
     public List<SimpleTaskResponseDto> getProjectTasks(@PathVariable Integer projectId,
-                                                       @AuthenticationPrincipal User currentUser) {
-        return projectService.listProjectTasks(projectId, currentUser);
+                                                       @AuthenticationPrincipal User currentUser,
+                                                       @RequestParam(value = "status", required = false) String filteredStatus) {
+        return projectService.listProjectTasks(projectId, currentUser, filteredStatus);
     }
 
     @GetMapping("{projectId}/members")
