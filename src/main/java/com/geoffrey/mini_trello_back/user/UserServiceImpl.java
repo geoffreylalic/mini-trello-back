@@ -1,7 +1,6 @@
 package com.geoffrey.mini_trello_back.user;
 
 import com.geoffrey.mini_trello_back.auth.AuthUtils;
-import com.geoffrey.mini_trello_back.auth.exceptions.AccessDeniedException;
 import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
 import com.geoffrey.mini_trello_back.common.ResponsePaginatedMapper;
 import com.geoffrey.mini_trello_back.role.Role;
@@ -19,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -75,7 +73,19 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto patchUserById(int userId, UpdateUserDto userDto, User authUser) {
         User user = userRepository.findUserById(userId).orElseThrow(() -> new UserDoesNotExistsException(userId));
         AuthUtils.checkAccessResource(user, authUser);
-        user.setEmail(userDto.email());
+        if (!userDto.firstName().isEmpty()) {
+            user.setFirstName(userDto.firstName());
+        }
+        if (!userDto.lastName().isEmpty()) {
+            user.setLastName(userDto.lastName());
+        }
+        if (!userDto.email().isEmpty() && !user.getEmail().equals(userDto.email())) {
+            int nbUserEmail = userRepository.countUsersByEmail(userDto.email());
+            if (nbUserEmail > 0) {
+                throw new UserEmailExistsException(userDto.email());
+            }
+            user.setEmail(userDto.email());
+        }
         userRepository.save(user);
         return userMapper.toUserResponse(user);
     }
