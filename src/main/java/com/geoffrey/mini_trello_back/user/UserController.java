@@ -54,8 +54,8 @@ public class UserController {
     }
 
     @PatchMapping("{id}/password")
-    public UserResponseDto changePassword(@PathVariable("id") int userId, ChangePasswordDto newPasswordDto, @AuthenticationPrincipal User authUser) {
-        return userService.changePassword(userId, newPasswordDto, authUser);
+    public UserResponseDto changePassword(@PathVariable("id") int userId, @Valid @RequestBody ChangePasswordDto passwordDto, @AuthenticationPrincipal User authUser) {
+        return userService.changePassword(userId, passwordDto, authUser);
     }
 
 }

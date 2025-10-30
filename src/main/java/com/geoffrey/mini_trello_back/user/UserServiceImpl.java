@@ -112,8 +112,8 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto changePassword(int userId, ChangePasswordDto passwordDto, User authUser) {
         User user = userRepository.findUserById(userId).orElseThrow(() -> new UserDoesNotExistsException(userId));
         AuthUtils.checkAccessResource(user, authUser);
-        boolean matches = passwordEncoder.matches(passwordEncoder.encode(passwordDto.newPassword()), user.getPassword());
-        if (matches) {
+        boolean matches = passwordEncoder.matches(passwordDto.oldPassword(), user.getPassword());
+        if (!matches) {
             throw new UserPasswordInvalid();
         }
 
