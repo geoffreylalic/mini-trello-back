@@ -2,10 +2,7 @@ package com.geoffrey.mini_trello_back.project;
 
 import com.geoffrey.mini_trello_back.common.ResponsePaginatedDto;
 import com.geoffrey.mini_trello_back.profile.dto.SimpleProfileResponseDto;
-import com.geoffrey.mini_trello_back.project.dto.CreateProjectDto;
-import com.geoffrey.mini_trello_back.project.dto.PatchProjectDto;
-import com.geoffrey.mini_trello_back.project.dto.PatchProjectOwnerDto;
-import com.geoffrey.mini_trello_back.project.dto.ProjectResponseDto;
+import com.geoffrey.mini_trello_back.project.dto.*;
 import com.geoffrey.mini_trello_back.task.dto.SimpleTaskResponseDto;
 import com.geoffrey.mini_trello_back.user.User;
 import jakarta.validation.Valid;
@@ -76,6 +73,11 @@ public class ProjectController {
                                                                                   @PageableDefault Pageable pageable,
                                                                                   @AuthenticationPrincipal User currentUser) {
         return projectService.listProjectMembers(projectId, pageable, currentUser);
+    }
+
+    @GetMapping("summary")
+    public List<ProjectsSummaryResponseDto> getSummary(@AuthenticationPrincipal User currentUser) {
+        return projectService.getSummary(currentUser);
     }
 
 }

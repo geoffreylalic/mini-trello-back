@@ -9,10 +9,7 @@ import com.geoffrey.mini_trello_back.profile.ProfileMapper;
 import com.geoffrey.mini_trello_back.profile.ProfileRepository;
 import com.geoffrey.mini_trello_back.profile.dto.SimpleProfileResponseDto;
 import com.geoffrey.mini_trello_back.profile.exceptions.ProfileNotFoundException;
-import com.geoffrey.mini_trello_back.project.dto.CreateProjectDto;
-import com.geoffrey.mini_trello_back.project.dto.PatchProjectDto;
-import com.geoffrey.mini_trello_back.project.dto.PatchProjectOwnerDto;
-import com.geoffrey.mini_trello_back.project.dto.ProjectResponseDto;
+import com.geoffrey.mini_trello_back.project.dto.*;
 import com.geoffrey.mini_trello_back.project.exceptions.ProjectNotFoundException;
 import com.geoffrey.mini_trello_back.task.Status;
 import com.geoffrey.mini_trello_back.task.Task;
@@ -20,12 +17,19 @@ import com.geoffrey.mini_trello_back.task.TaskMapper;
 import com.geoffrey.mini_trello_back.task.TaskRepository;
 import com.geoffrey.mini_trello_back.task.dto.SimpleTaskResponseDto;
 import com.geoffrey.mini_trello_back.user.User;
+import com.geoffrey.mini_trello_back.user.UserMapper;
+import com.geoffrey.mini_trello_back.user.dto.ProfileProjectMember;
+import com.geoffrey.mini_trello_back.user.dto.ProjectTaskStatsDto;
+import com.geoffrey.mini_trello_back.user.dto.UserResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectService {
@@ -36,13 +40,14 @@ public class ProjectService {
     private final TaskRepository taskRepository;
     private final ProfileMapper profileMapper;
     private final ResponsePaginatedMapper responsePaginatedMapper;
+    private final UserMapper userMapper;
 
     public ProjectService(ProjectRepository projectRepository,
                           ProfileRepository profileRepository,
                           ProjectMapper projectMapper,
                           TaskMapper taskMapper,
                           TaskRepository taskRepository,
-                          ProfileMapper profileMapper, ResponsePaginatedMapper responsePaginatedMapper) {
+                          ProfileMapper profileMapper, ResponsePaginatedMapper responsePaginatedMapper, UserMapper userMapper) {
         this.projectRepository = projectRepository;
         this.profileRepository = profileRepository;
         this.projectMapper = projectMapper;
@@ -50,6 +55,7 @@ public class ProjectService {
         this.taskRepository = taskRepository;
         this.profileMapper = profileMapper;
         this.responsePaginatedMapper = responsePaginatedMapper;
+        this.userMapper = userMapper;
     }
 
     public ResponsePaginatedDto<List<ProjectResponseDto>> listProjects(Pageable pageable, User currentUser) {
@@ -174,4 +180,30 @@ public class ProjectService {
         }
     }
 
+    public List<ProjectsSummaryResponseDto> getSummary(User currentUser) {
+        Profile profile = AuthUtils.getProfileFromUser(currentUser);
+
+        List<SimpleProjectDto> projects = projectRepository.findProjectIdsByOwnerId(profile.getId()).stream().toList();
+
+        List<Integer> projectIds = projects.stream().map(SimpleProjectDto::id).toList();
+        List<ProjectTaskStatsDto> projectTaskStatsDtoList = projectRepository.findProjectTasksStatsByIds(projectIds).stream().toList();
+        List<ProfileProjectMember> members = profileRepository.findProfilesByRelatedProjectIds(projectIds);
+
+        Map<Integer, List<UserResponseDto>> mappedProfileByProjectId = members.stream()
+                .collect(
+                        Collectors.groupingBy(ProfileProjectMember::projectId,
+                                Collectors.mapping(prof -> userMapper.toUserResponse(prof.profile().getUser()), Collectors.toList())
+                        )
+                );
+
+
+        return projects.stream().map(proj -> {
+            ProjectTaskStatsDto projectTaskStatsDto = projectTaskStatsDtoList.stream().filter(p -> Objects.equals(p.id(), proj.id())).findFirst().orElse(new ProjectTaskStatsDto(proj.id(), 0, 0));
+            float progress = 0;
+            if (projectTaskStatsDto.totalTasks() > 0) {
+                progress = (float) projectTaskStatsDto.totalTasksDone() / projectTaskStatsDto.totalTasks() * 100;
+            }
+            return new ProjectsSummaryResponseDto(proj.id(), proj.name(), userMapper.toUserResponse(currentUser), projectTaskStatsDto.totalTasks(), progress, mappedProfileByProjectId.getOrDefault(proj.id(), new ArrayList<>()));
+        }).toList();
+    }
 }

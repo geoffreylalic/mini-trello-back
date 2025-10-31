@@ -1,6 +1,7 @@
 package com.geoffrey.mini_trello_back.profile;
 
 import com.geoffrey.mini_trello_back.project.Project;
+import com.geoffrey.mini_trello_back.user.dto.ProfileProjectMember;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -40,6 +41,15 @@ public interface ProfileRepository extends JpaRepository<Profile, Integer> {
             "LEFT JOIN t.project proj " +
             "WHERE proj.id = :projectId AND prof IS NOT NULL")
     Page<Profile> findProfilesByRelatedProject(Integer projectId, Pageable pageable);
+
+    @Query("""
+                SELECT DISTINCT new com.geoffrey.mini_trello_back.user.dto.ProfileProjectMember(proj.id, prof)
+                FROM Task t
+                LEFT JOIN t.assignedTo prof
+                LEFT JOIN t.project proj
+                WHERE proj.id in :projectIds AND prof IS NOT NULL
+            """)
+    List<ProfileProjectMember> findProfilesByRelatedProjectIds(List<Integer> projectIds);
 
     Optional<Profile> findByUserId(Integer id);
 }
