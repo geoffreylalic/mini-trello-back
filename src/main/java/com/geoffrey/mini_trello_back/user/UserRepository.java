@@ -3,6 +3,7 @@ package com.geoffrey.mini_trello_back.user;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
@@ -16,5 +17,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<UserDetails> findUserByEmail(String username);
 
+    @Query("""
+            SELECT u
+            FROM User u
+            WHERE u.email LIKE %:email% AND u.profile IS NOT NULL
+            """)
     Page<User> findByEmailContaining(Pageable page, String email);
 }
