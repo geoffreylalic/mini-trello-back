@@ -119,6 +119,7 @@ public class TaskService {
         checkIsOwnerProject(profile, task);
 
         task.setAssignedTo(assignedProfile);
+        taskRepository.save(task);
         return taskMapper.toTaskResponseDto(task);
     }
 
