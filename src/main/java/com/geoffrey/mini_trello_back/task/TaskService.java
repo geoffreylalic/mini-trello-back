@@ -14,6 +14,7 @@ import com.geoffrey.mini_trello_back.task.exceptions.ProfileNotRelatedToProjectE
 import com.geoffrey.mini_trello_back.task.exceptions.TaskNotFoundException;
 import com.geoffrey.mini_trello_back.task.exceptions.TaskStatusMismatchException;
 import com.geoffrey.mini_trello_back.user.User;
+import com.geoffrey.mini_trello_back.user.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,16 +31,18 @@ public class TaskService {
     private final ProfileRepository profileRepository;
     private final ProjectRepository projectRepository;
     private final ResponsePaginatedMapper responsePaginatedMapper;
+    private final UserRepository userRepository;
 
     public TaskService(TaskMapper taskMapper,
                        TaskRepository taskRepository,
                        ProfileRepository profileRepository,
-                       ProjectRepository projectRepository, ResponsePaginatedMapper responsePaginatedMapper) {
+                       ProjectRepository projectRepository, ResponsePaginatedMapper responsePaginatedMapper, UserRepository userRepository) {
         this.taskMapper = taskMapper;
         this.taskRepository = taskRepository;
         this.profileRepository = profileRepository;
         this.projectRepository = projectRepository;
         this.responsePaginatedMapper = responsePaginatedMapper;
+        this.userRepository = userRepository;
     }
 
     public ResponsePaginatedDto<List<TaskResponseDto>> getTasks(Pageable pageable, User currentUser) {
@@ -105,12 +108,15 @@ public class TaskService {
 
     public TaskResponseDto patchAssignedTask(Integer taskId, UpdateAssignedTaskDto taskDto, User currentUser) {
         Profile profile = AuthUtils.getProfileFromUser(currentUser);
-        Integer profileId = taskDto.profileId();
-        Profile assignedProfile = profileRepository.findById(profileId).orElseThrow(() -> new ProfileNotFoundException(profileId));
+        String email = taskDto.email();
+        User user = (User) userRepository.findUserByEmail(email).orElseThrow();
+        Profile assignedProfile = user.getProfile();
+        if (assignedProfile == null) {
+            throw new ProfileNotFoundException();
+        }
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException(taskId));
 
         checkIsOwnerProject(profile, task);
-
 
         task.setAssignedTo(assignedProfile);
         return taskMapper.toTaskResponseDto(task);
