@@ -28,8 +28,8 @@ public class UserController {
 
     // todo: move to /admin api
     @GetMapping("")
-    public ResponsePaginatedDto<List<UserResponseDto>> listUsers(@PageableDefault(size = 10, page = 0) Pageable pageable) {
-        return userService.listUsers(pageable);
+    public ResponsePaginatedDto<List<UserResponseDto>> listUsers(@PageableDefault(size = 10, page = 0) Pageable pageable, @RequestParam(value = "email", required = false) String email) {
+        return userService.listUsers(pageable, email);
 
     }
 

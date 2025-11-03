@@ -52,8 +52,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponsePaginatedDto<List<UserResponseDto>> listUsers(Pageable pageable) {
-        Page<UserResponseDto> page = userRepository.findAll(pageable).map(userMapper::toUserResponse);
+    public ResponsePaginatedDto<List<UserResponseDto>> listUsers(Pageable pageable, String email) {
+        Page<UserResponseDto> page = userRepository.findByEmailContaining(pageable, email).map(userMapper::toUserResponse);
         return responsePaginatedMapper.toResponsePaginatedDto(page, pageable);
     }
 

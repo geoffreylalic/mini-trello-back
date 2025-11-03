@@ -12,7 +12,7 @@ import java.util.List;
 public interface UserService extends UserDetailsService {
     UserResponseDto createUser(CreateUserDto userDto);
 
-    ResponsePaginatedDto<List<UserResponseDto>> listUsers(Pageable pageable);
+    ResponsePaginatedDto<List<UserResponseDto>> listUsers(Pageable pageable, String email);
 
     UserResponseDto getUserById(int userId, User AuthUser);
 
